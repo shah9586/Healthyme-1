@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - HealthyMe</title>
+   <style>
+    
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f4fdf7;
+    min-height: 100vh;
+}
+
+/* NAVBAR */
+.navbar {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    padding: 15px 40px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* HERO SECTION */
+.hero {
+    height: 300px;
+    background: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352') no-repeat center/cover;
+    display: flex;
+    align-items: center;
+    padding: 40px;
+    color: white;
+    position: relative;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+.hero-text {
+    position: relative;
+    max-width: 500px;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.hero p {
+    margin: 10px 0 20px;
+}
+
+.hero-btn {
+    padding: 12px 25px;
+    background: #27ae60;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: 0.3s;
+}
+
+.hero-btn:hover {
+    background: #219150;
+    transform: scale(1.05);
+}
+
+/* STATS */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: -50px;
+    padding: 0 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.stat-card h2 {
+    margin: 0;
+    color: #27ae60;
+}
+
+/* CONTAINER */
+.container {
+    padding: 40px;
+}
+
+/* CARDS */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    text-decoration: none;
+    color: black;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: 0.4s;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.card h3 {
+    margin: 0;
+    color: #27ae60;
+}
+
+.card p {
+    font-size: 13px;
+    color: #666;
+}
+    .graph-section {
+    padding: 40px;
+}
+
+.graph-box {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    height: 200px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.bar {
+    flex: 1;
+    background: linear-gradient(#27ae60, #2ecc71);
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    font-size: 12px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 5px;
+    transition: 0.3s;
+}
+
+.bar:hover {
+    transform: scale(1.1);
+}
+<div class="ai-section">
+    <h2>AI Health Suggestions 🤖</h2>
+
+    <div class="ai-box">
+        <p>⚠️ You consumed high sugar products this week.</p>
+        <p>✅ Try adding more fruits and vegetables.</p>
+        <p>💧 Drink at least 2L of water daily.</p>
+    </div>
+</div>
+.graph-box, .ai-box {
+    animation: fadeUp 0.8s ease;
+}
+/* FOOTER */
+.footer {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    color: white;
+    margin-top: 40px;
+    padding-top: 30px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px 40px;
+    flex-wrap: wrap;
+}
+
+.footer-section {
+    max-width: 250px;
+}
+
+.footer-section h3,
+.footer-section h4 {
+    margin-bottom: 10px;
+}
+
+.footer-section p {
+    font-size: 13px;
+    margin: 5px 0;
+    opacity: 0.9;
+    transition: 0.3s;
+}
+
+/* Hover effect */
+.footer-section p:hover {
+    opacity: 1;
+    transform: translateX(5px);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding: 15px;
+    font-size: 12px;
+    background: rgba(0,0,0,0.1);
+}
+.footer {
+    animation: fadeUp 1s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div>HealthyMe</div>
+    <div>
+        {{ request.user.first_name }} |
+        <a href="/logout/">Logout</a>
+    </div>
+</div>
+
+<!-- HERO SECTION -->
+<div class="hero">
+    <div class="hero-text">
+        <h1>Welcome, {{ request.user.first_name }} 👋</h1>
+        <p>Track your food. Improve your health. Live smarter.</p>
+        <a href="/scan/" class="hero-btn">Start Scanning</a>
+    </div>
+</div>
+<div class="graph-section">
+    <h2>Your Weekly Health Trend</h2>
+
+    <div class="graph-box">
+        <div class="bar" style="height: 60%;">Mon</div>
+        <div class="bar" style="height: 80%;">Tue</div>
+        <div class="bar" style="height: 50%;">Wed</div>
+        <div class="bar" style="height: 90%;">Thu</div>
+        <div class="bar" style="height: 70%;">Fri</div>
+        <div class="bar" style="height: 85%;">Sat</div>
+        <div class="bar" style="height: 75%;">Sun</div>
+    </div>
+</div>
+<div class="ai-section">
+    <h2>AI Health Suggestions 🤖</h2>
+
+    <div class="ai-box">
+        <p>⚠️ You consumed high sugar products this week.</p>
+        <p>✅ Try adding more fruits and vegetables.</p>
+        <p>💧 Drink at least 2L of water daily.</p>
+    </div>
+</div>
+
+{% comment %} <!-- STATS SECTION -->
+<div class="stats">
+    <div class="stat-card">
+        <h2>12</h2>
+        <p>Products Scanned</p>
+    </div>
+    <div class="stat-card">
+        <h2>78%</h2>
+        <p>Avg Health Score</p>
+    </div>
+    <div class="stat-card">
+        <h2>5</h2>
+        <p>Rewards Earned</p>
+    </div>
+</div> {% endcomment %}
+
+<!-- FEATURE CARDS -->
+<div class="container">
+
+    <h2>Explore Features</h2>
+
+    <div class="cards">
+
+        <a href="/scan/" class="card">
+            <h3>📷 Scan Product</h3>
+            <p>Analyze food instantly</p>
+        </a>
+
+        <div class="card">
+            <h3>📊 Health Score</h3>
+            <p>Track your eating habits</p>
+        </div>
+
+        <div class="card">
+            <h3>🧪 Ingredients</h3>
+            <p>Know what's inside</p>
+        </div>
+
+        <div class="card">
+            <h3>🎁 Rewards</h3>
+            <p>Earn points & coupons</p>
+        </div>
+
+        <div class="card">
+            <h3>👥 Community</h3>
+            <p>Share & learn together</p>
+        </div>
+
+    </div>
+
+</div>
+<footer class="footer">
+
+    <div class="footer-content">
+
+        <div class="footer-section">
+            <h3>HealthyMe</h3>
+            <p>Empowering your informed health journey.</p>
+        </div>
+
+        <div class="footer-section">
+            <h4>Features</h4>
+            <p>Scan Product</p>
+            <p>Health Score</p>
+            <p>Rewards</p>
+        </div>
+
+        <div class="footer-section">
+            <h4>Contact</h4>
+            <p>Email: support@healthyme.com</p>
+            <p>Phone: +91 9876543210</p>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        © 2026 HealthyMe | All Rights Reserved
+    </div>
+
+</footer>
+
+</body>
+</html>

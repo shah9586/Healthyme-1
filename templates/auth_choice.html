@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome - HealthyMe</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+
+            background: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352') no-repeat center center/cover;
+
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Dark overlay */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            top: 0;
+            left: 0;
+        }
+
+        /* Floating animation background effect */
+        body::after {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 10%, transparent 10%);
+            background-size: 50px 50px;
+            animation: moveBg 20s linear infinite;
+        }
+
+        @keyframes moveBg {
+            from { transform: translate(0,0); }
+            to { transform: translate(-200px, -200px); }
+        }
+
+        .card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    width: 400px;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 1;
+
+    transition: all 0.4s ease;
+
+    /* Entrance animation */
+    animation: fadeSlide 1s ease forwards;
+}
+
+/* 🔥 HOVER EFFECT */
+.card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+}
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(45deg, #27ae60, #2ecc71, #00ffcc);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    transition: 0.4s;
+}
+
+/* Glow appears on hover */
+.card:hover::before {
+    opacity: 1;
+}
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #27ae60;
+            margin-bottom: 10px;
+            animation: fadeSlide 1.2s ease forwards;
+        }
+
+        p {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 30px;
+            animation: fadeSlide 1.4s ease forwards;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 30px;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+
+            animation: fadeSlide 1.6s ease forwards;
+        }
+
+        /* Button hover animation */
+       .btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    letter-spacing: 0.5px;
+}
+
+.card:hover h1 {
+    color: #1e8449;
+    transition: 0.3s;
+}
+
+.card:hover p {
+    color: #333;
+}
+
+        .login-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .login-btn:hover {
+            background: #219150;
+        }
+
+        .register-btn {
+            background: white;
+            color: #27ae60;
+            border: 2px solid #27ae60;
+        }
+
+        .register-btn:hover {
+            background: #27ae60;
+            color: white;
+        }
+
+        .small-text {
+            font-size: 12px;
+            margin-top: 20px;
+            color: #888;
+            animation: fadeSlide 1.8s ease forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Welcome to HealthyMe</h1>
+        <p>Your smart companion for healthier food choices</p>
+
+        <a href="/login/" class="btn login-btn">Login</a>
+        <a href="/register/" class="btn register-btn">Register</a>
+
+        <div class="small-text">
+            Eat Smart • Live Healthy • Stay Fit
+        </div>
+    </div>
+
+</body>
+</html>

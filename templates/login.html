@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - HealthyMe</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: linear-gradient(-45deg, #27ae60, #2ecc71, #1abc9c, #16a085);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .box {
+            backdrop-filter: blur(15px);
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 340px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            color: white;
+            animation: fadeSlide 1s ease;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-bottom: 2px solid #fff;
+            background: transparent;
+            color: white;
+            outline: none;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            color: #ddd;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus + label,
+        .input-group input:valid + label {
+            top: -10px;
+            font-size: 11px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 30px;
+            border: none;
+            background: white;
+            color: #27ae60;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px white;
+        }
+
+        .small-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .small-text a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @keyframes fadeSlide {
+            from {opacity: 0; transform: translateY(40px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+    </style>
+</head>
+
+<body>
+
+<form method="POST" class="box">
+    {% csrf_token %}
+    <h2>Login</h2>
+
+    <div class="input-group">
+         <span>📧</span>
+        <input type="text" name="username" placeholder="Email or Contact" required>
+        {% comment %} <label>Email or Contact</label> {% endcomment %}
+    </div>
+
+    <div class="input-group">
+        <span>🔒</span>
+        <input type="password" name="password" placeholder="Password" required>
+        {% comment %} <label>Password</label> {% endcomment %}
+    </div>
+
+    <button type="submit">Login</button>
+
+    <div class="small-text">
+        Don’t have an account? <a href="/register/">Register</a>
+    </div>
+</form>
+
+</body>
+</html>
