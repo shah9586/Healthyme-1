@@ -24,12 +24,34 @@
         }
 
         .nav-links a {
-            color: white;
-            margin-left: 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+        color: white;
+        margin-left: 20px;
+        text-decoration: none;
+        font-weight: bold;
+        position: relative;
+        transition: color 0.3s ease;
+    }
 
+    /* 🔥 Hover effect */
+    .nav-links a:hover {
+        color: #aef5c8; /* light green */
+    }
+
+    /* ✨ Smooth underline animation */
+    .nav-links a::after {
+        content: "";
+        position: absolute;
+        width: 0%;
+        height: 2px;
+        background: #aef5c8;
+        left: 0;
+        bottom: -5px;
+        transition: width 0.3s ease;
+    }
+
+.nav-links a:hover::after {
+    width: 100%;
+}
         .hero {
             text-align: center;
             padding: 80px 20px;
@@ -46,16 +68,42 @@
             margin: 40px auto;
         }
 
-        .btn {
-            padding: 12px 25px;
-            margin: 10px;
-            background-color: #1d9750;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-        }
+            .btn {
+        padding: 14px 30px;
+        margin: 10px;
+        background: linear-gradient(45deg, #27ae60, #1d9750);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
 
+    /* 🔥 Hover Animation */
+    .btn:hover {
+        transform: translateY(-5px) scale(1.08);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        letter-spacing: 1px;
+    }
+
+    /* ✨ Shine Effect */
+    .btn::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: 0.5s;
+    }
+
+    .btn:hover::after {
+        left: 100%;
+    }
         .features {
             display: flex;
             justify-content: space-around;
@@ -63,13 +111,38 @@
         }
 
         .feature-box {
-            width: 25%;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 25%;
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+
+        transition: all 0.4s ease;
+
+        /* Entrance animation */
+        opacity: 0;
+        transform: translateY(50px);
+        animation: fadeUp 1s forwards;
+    }
+
+    /* 🔥 Delay for each card */
+    .feature-box:nth-child(1) { animation-delay: 0.3s; }
+    .feature-box:nth-child(2) { animation-delay: 0.6s; }
+    .feature-box:nth-child(3) { animation-delay: 0.9s; }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
+    }
+
+    /* 🔥 Hover effect */
+    .feature-box:hover {
+        transform: translateY(-12px) scale(1.05);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
 
         .about {
             padding: 50px;
@@ -91,7 +164,7 @@
     <div class="navbar">
         <h2>HealthyMe</h2>
         <div class="nav-links">
-            <a href="#">Home</a>
+            {% comment %} <a href="#">Home</a> {% endcomment %}
             <a href="/login/">Login</a>
             <a href="/register/">Register</a>
         </div>

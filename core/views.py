@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser
+from .models import User
 from django.core.mail import send_mail
 
 
@@ -33,13 +33,13 @@ def login_view(request):
         user = None
         if '@' in username_input:
             try:
-                user_obj = CustomUser.objects.get(email=username_input)
+                user_obj = User.objects.get(email=username_input)
                 user = authenticate(request, username=user_obj.username, password=password)
             except:
                 pass
         else:
             try:
-                user_obj = CustomUser.objects.get(contact=username_input)
+                user_obj = User.objects.get(contact=username_input)
                 user = authenticate(request, username=user_obj.username, password=password)
             except:
                 pass
@@ -74,8 +74,8 @@ def register_view(request):
         except ValidationError as e:
             return render(request, 'register.html', {'error': e.messages})
 
-        from .models import CustomUser
-        user = CustomUser.objects.create_user(
+        from .models import User
+        user = User.objects.create_user(
             username=data['email'],
             email=data['email'],
             first_name=data['first_name'],
