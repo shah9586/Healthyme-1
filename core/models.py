@@ -1,8 +1,10 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
-    contact = models.CharField(max_length=15, unique=True)
+   email = models.EmailField(unique=True)
+   contact = models.CharField(max_length=10, unique=True)
 
-    def __str__(self):
+def __str__(self):
         return self.username
+    

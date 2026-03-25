@@ -108,7 +108,97 @@
             from {opacity: 0; transform: translateY(40px);}
             to {opacity: 1; transform: translateY(0);}
         }
+
+        
+
+.input-group {
+    position: relative;
+    margin: 20px 0;
+}
+
+.eye {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+    display: none !important;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.7;
+    transition: 0.3s;
+}
+
+.toggle-password:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+
+
+.input-field {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-field input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid white;
+    background: transparent;
+    padding: 10px 35px 10px 30px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.input-field label {
+    position: absolute;
+    left: 30px;
+    top: 10px;
+    color: #ddd;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.input-field input:focus + label,
+.input-field input:valid + label {
+    top: -10px;
+    font-size: 11px;
+    color: #fff;
+}
+
+.icon {
+    position: absolute;
+    left: 5px;
+    top: 10px;
+    color: white;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 5px;
+    top: 10px;
+    cursor: pointer;
+}
     </style>
+
+    
 </head>
 
 <body>
@@ -137,27 +227,109 @@
 
     <div class="input-group">
         <span>📱</span> 
-        <input type="text" name="contact" placeholder="  Contact Number" required>
+      <input type="text" name="contact" maxlength="10" pattern="[0-9]{10}"  placeholder="Contact Number" required>
           {% comment %} <label>📱</label>  {% endcomment %}
+          <script>
+document.querySelector('input[name="contact"]').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+});
+</script>
     </div>
 
-    <div class="input-group">
-        <span>🔒</span>
-        <input type="password" name="password1" placeholder="Password" required>
-        {% comment %} <label>Password</label> {% endcomment %}
-    </div>
+  <div class="input-group">
+    <span>🔒</span>
+    <input type="password" id="password1" name="password1"
+           placeholder="Password"
+           pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).{8,}$"
+           title="Must be 8+ chars, include 1 uppercase, 1 number & 1 special character"
+           required>
+    <span class="eye" onclick="togglePassword('password1', this)">🙈</span>
+</div>
 
-    <div class="input-group">
-        <span>🔒</span>
-        <input type="password" name="password2" placeholder="Confirm Password" required>
-        {% comment %} <label>Confirm Password</label> {% endcomment %}
-    </div>
+<div class="input-group">
+    <span>🔒</span>
+    <input type="password" id="password2" name="password2"
+           placeholder="Confirm Password"
+           required>
+    <span class="eye" onclick="togglePassword('password2', this)">🙈</span>
+</div>
+
+<div id="strengthMsg" style="font-size:12px;"></div>
+
+<script>
+document.querySelector("form").addEventListener("submit", function(e) {
+    let p1 = document.getElementById("password1").value;
+    let p2 = document.getElementById("password2").value;
+    let error = document.getElementById("passError");
+
+    if (p1 !== p2) {
+        e.preventDefault();
+        error.innerText = "❌ Passwords do not match";
+    } else {
+        error.innerText = "";
+    }
+});
+</script>
+
+<script>
+document.getElementById("password1").addEventListener("input", function() {
+    let val = this.value;
+    let msg = document.getElementById("strengthMsg");
+
+    let strong = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).{8,}$/;
+
+    if (val.length === 0) {
+        msg.innerHTML = "";
+    } else if (strong.test(val)) {
+        msg.innerHTML = "✅ Strong Password";
+        msg.style.color = "lightgreen";
+    } else {
+        msg.innerHTML = "❌ Weak (Use capital, number, special char, 8+ length)";
+        msg.style.color = "red";
+    }
+});
+</script>
+
+<script>
+function togglePassword(fieldId, icon) {
+    let input = document.getElementById(fieldId);
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.innerText = "👁️";
+    } else {
+        input.type = "password";
+        icon.innerText = "🙈";
+    }
+}
+</script>
+<script>
+let p1 = document.getElementById("password1");
+let p2 = document.getElementById("password2");
+let msg = document.getElementById("passError");
+
+p2.addEventListener("input", function() {
+    if (p1.value !== p2.value) {
+        msg.innerText = "❌ Passwords do not match";
+    } else {
+        msg.innerText = "✅ Passwords match";
+        msg.style.color = "lightgreen";
+    }
+});
+</script>
+
+ <p id="passError" style="color:#ff4d4d; font-size:13px; margin-top:5px;">
+    {{ error }}
+</p>
 
     <button type="submit">Register</button>
 
     <div class="small-text">
         Already have an account? <a href="/login/">Login</a>
     </div>
+    {% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
 </form>
 
 </body>
