@@ -5,6 +5,9 @@ from django.contrib.auth import authenticate, login, logout
 from .models import CustomUser
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
+#from .models import ScanHistory  # optional (create later)
 
 
 User = get_user_model()
@@ -129,3 +132,23 @@ def user_logout(request):
 
 
 
+
+User = get_user_model()
+
+@login_required
+def admin_dashboard(request):
+    users = User.objects.all()
+
+    return render(request, 'admin_dashboard.html', {
+        'users': users
+    })
+
+
+@login_required
+def admin_dashboard(request):
+    if not request.user.is_superuser:
+        return redirect('/')
+
+    users = User.objects.all()
+
+    return render(request, 'admin_dashboard.html', {'users': users})
