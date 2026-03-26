@@ -124,6 +124,12 @@
         <input type="password" name="password" placeholder="Password" required>
         {% comment %} <label>Password</label> {% endcomment %}
     </div>
+    
+   {% if error %}
+<p style="color:#ff4d4d; font-size:13px; margin-top:5px;">
+    {{ error }}
+</p>
+{% endif %}
 
     <button type="submit">Login</button>
 

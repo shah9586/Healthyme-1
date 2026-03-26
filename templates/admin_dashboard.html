@@ -85,6 +85,32 @@
             {% endfor %}
 
         </table>
+        <table>
+    <tr>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Contact</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ user.email }}</td>
+        <td>{{ user.first_name }} {{ user.last_name }}</td>
+        <td>{{ user.contact }}</td>
+
+        <td>
+            <a href="/edit-user/{{ user.id }}/">
+                <button style="background:orange;">Edit</button>
+            </a>
+
+            <a href="/delete-user/{{ user.id }}/" onclick="return confirm('Delete user?')">
+                <button style="background:red; color:white;">Delete</button>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
     </div>
 
 </div>

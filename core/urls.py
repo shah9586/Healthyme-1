@@ -10,4 +10,7 @@ urlpatterns = [
     path('scan/', views.scan, name='scan'),
     path('logout/', views.user_logout, name='logout'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-dashboard/', views.admin_dashboard),
+    path('delete-user/<int:user_id>/', views.delete_user),
+    path('edit-user/<int:user_id>/', views.edit_user), 
 ]

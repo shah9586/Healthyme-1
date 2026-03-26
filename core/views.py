@@ -8,6 +8,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 #from .models import ScanHistory  # optional (create later)
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
@@ -22,41 +25,37 @@ def auth_choice(request):
 
 # LOGIN (email OR contact)
 def login_view(request):
+    error = ""
+
     if request.method == 'POST':
         username_input = request.POST.get('username')
         password = request.POST.get('password')
 
-        # Check if input is email or contact
         user = None
+
         if '@' in username_input:
             try:
                 user_obj = User.objects.get(email=username_input)
                 user = authenticate(request, username=user_obj.username, password=password)
-            except:
-                pass
+            except User.DoesNotExist:
+                error = "❌ User not found"
         else:
             try:
                 user_obj = User.objects.get(contact=username_input)
                 user = authenticate(request, username=user_obj.username, password=password)
-            except:
-                pass
+            except User.DoesNotExist:
+                error = "❌ User not found"
 
         if user:
             login(request, user)
-
-            # 📩 Send Email on Login
-            send_mail(
-                'Welcome to HealthyMe 🎉',
-                'You have successfully logged in!',
-                'your_email@gmail.com',  # sender
-                [user.email],
-                fail_silently=True,
-            )
-
             return redirect('/dashboard/')
-    
-    return render(request, 'login.html')
+        else:
+            if error == "":
+                error = "❌ Incorrect password"
 
+    return render(request, 'login.html', {'error': error})
+    
+   
 def register_view(request):
     if request.method == 'POST':
         data = request.POST
@@ -152,3 +151,45 @@ def admin_dashboard(request):
     users = User.objects.all()
 
     return render(request, 'admin_dashboard.html', {'users': users})
+
+
+# ADMIN DASHBOARD (READ)
+@login_required
+def admin_dashboard(request):
+    if not request.user.is_superuser:
+        return redirect('/')
+
+    users = User.objects.all()
+    return render(request, 'admin_dashboard.html', {'users': users})
+
+
+# DELETE USER
+@login_required
+def delete_user(request, user_id):
+    if not request.user.is_superuser:
+        return redirect('/')
+
+    user = get_object_or_404(User, id=user_id)
+    user.delete()
+    return redirect('/admin-dashboard/')
+
+
+# UPDATE USER
+@login_required
+def edit_user(request, user_id):
+    if not request.user.is_superuser:
+        return redirect('/')
+
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.email = request.POST.get('email')
+        user.contact = request.POST.get('contact')
+        user.save()
+        return redirect('/admin-dashboard/')
+
+    return render(request, 'edit_user.html', {'user': user})
+
+
