@@ -3,99 +3,61 @@
 <head>
     <title>Scan Product</title>
 
-   <style>
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #e8fdf5, #ffffff);
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-    }
-
-    .box {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        width: 400px;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        animation: fadeUp 0.8s ease;
-    }
-
-    h2 {
-        color: #27ae60;
-        margin-bottom: 10px;
-    }
-
-    input {
-        width: 100%;
-        padding: 14px;
-        margin-top: 15px;
-        border-radius: 12px;
-        border: 1px solid #ddd;
-        outline: none;
-        transition: 0.3s;
-    }
-
-    input:focus {
-        border-color: #27ae60;
-        box-shadow: 0 0 8px rgba(39,174,96,0.3);
-    }
-
-    button {
-        margin-top: 20px;
-        padding: 14px;
-        width: 100%;
-        border: none;
-        background: linear-gradient(90deg, #27ae60, #2ecc71);
-        color: white;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 15px;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    .result {
-        margin-top: 25px;
-        padding: 20px;
-        border-radius: 15px;
-        background: #f4fdf7;
-        animation: fadeUp 0.6s ease;
-    }
-
-    .result h3 {
-        margin: 0;
-        color: #2c3e50;
-    }
-
-    .score {
-        font-size: 22px;
-        font-weight: bold;
-        color: #27ae60;
-    }
-
-    @keyframes fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e8fdf5, #ffffff);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        .box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
-    }
-</style>
+
+        h2 {
+            color: #27ae60;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            background: #27ae60;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .divider {
+            margin: 15px 0;
+            color: #888;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f4fdf7;
+        }
+    </style>
 </head>
 
 <body>
@@ -103,19 +65,28 @@
 <div class="box">
     <h2>Scan Your Product</h2>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="text" name="product" placeholder="Enter product name..." required>
-        <button type="submit">Analyze</button>
+        <input type="file" name="image" required>
+        <button type="submit">Scan Product</button>
     </form>
 
-   {% if result %}
-<div class="result">
-    <h3>{{ result.name }}</h3>
-    <p class="score">Health Score: {{ result.score }}/100</p>
-    <p>{{ result.message }}</p>
-</div>
+    {% if result %}
+    <div class="result">
+        <h3>Health Score: {{ result.score }}/100</h3>
 
+        <p><b>Ingredients Detected:</b></p>
+        <pre>{{ result.raw_text }}</pre>
+
+        <p><b>Issues Found:</b></p>
+        <ul>
+            {% for i in result.issues %}
+            <li>{{ i }}</li>
+            {% endfor %}
+        </ul>
+
+        <p><b>Suggestion:</b> {{ result.suggestion }}</p>
+    </div>
     {% endif %}
 </div>
 

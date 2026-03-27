@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
@@ -11,6 +13,12 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.shortcuts import render
+import pytesseract
+from PIL import Image
+from .health_logic import analyze_product
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
 User = get_user_model()
@@ -193,3 +201,25 @@ def edit_user(request, user_id):
     return render(request, 'edit_user.html', {'user': user})
 
 
+def scan(request):
+    if request.method == 'POST' and request.FILES['image']:
+        img_file = request.FILES['image']
+
+        # Save image
+        img = Image.open(img_file)
+
+        # OCR
+        extracted_text = pytesseract.image_to_string(img)
+
+        # Analyze
+        result = analyze_product(extracted_text)
+
+        return render(request, 'result.html', {
+            'text': extracted_text,
+            'score': result['score'],
+            'issues': result['issues'],
+            'positives': result['positives'],
+            'suggestion': result['suggestion']
+        })
+
+    return render(request, 'scan.html')

@@ -1,23 +1,158 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit User</title>
+    <title>Edit User - HealthyMe</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: linear-gradient(-45deg, #2ecc71, #27ae60, #16a085, #1abc9c);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .card {
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            color: white;
+            animation: fadeSlide 0.8s ease;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 10px;
+            border: none;
+            border-bottom: 2px solid white;
+            background: transparent;
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            color: #ddd;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus + label,
+        .input-group input:valid + label {
+            top: -10px;
+            font-size: 11px;
+            color: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 30px;
+            border: none;
+            background: white;
+            color: #27ae60;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px white;
+        }
+
+        .back-btn {
+            margin-top: 10px;
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: #27ae60;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
 </head>
 
 <body>
 
-<h2>Edit User</h2>
+    
 
-<form method="POST">
-    {% csrf_token %}
+<div class="card">
+    <h2>✏️ Edit User</h2>
 
-    <input type="text" name="first_name" value="{{ user.first_name }}" required><br><br>
-    <input type="text" name="last_name" value="{{ user.last_name }}" required><br><br>
-    <input type="email" name="email" value="{{ user.email }}" required><br><br>
-    <input type="text" name="contact" value="{{ user.contact }}" required><br><br>
+    <form method="POST">
+        {% csrf_token %}
 
-    <button type="submit">Update</button>
-</form>
+        <div class="input-group">
+            <input type="text" name="first_name" value="{{ user.first_name }}" required>
+            <label>First Name</label>
+        </div>
+
+        <div class="input-group">
+            <input type="text" name="last_name" value="{{ user.last_name }}" required>
+            <label>Last Name</label>
+        </div>
+
+        <div class="input-group">
+            <input type="email" name="email" value="{{ user.email }}" required>
+            <label>Email</label>
+        </div>
+
+        <div class="input-group">
+            <input type="text" name="contact" value="{{ user.contact }}" required maxlength="10">
+            <label>Contact</label>
+        </div>
+
+        <button type="submit">Update User</button>
+    </form>
+
+    <a href="/admin-dashboard/">
+        <button class="back-btn">⬅ Back</button>
+    </a>
+
+</div>
 
 </body>
 </html>
