@@ -2,153 +2,130 @@
 <html>
 <head>
     <title>HealthyMe Result</title>
-
     <style>
         body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: Arial;
             background: #f4fdf7;
-            color: #2c3e50;
+            text-align: center;
         }
 
-        .container {
-            max-width: 700px;
+        .card {
+            width: 400px;
             margin: 40px auto;
-            background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
-            box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         h2 {
-            text-align: center;
-            color: #27ae60;
+            margin: 10px 0;
         }
 
         .score {
             font-size: 40px;
-            text-align: center;
             font-weight: bold;
-            margin: 20px 0;
         }
 
         .bar {
-            height: 20px;
-            border-radius: 10px;
+            height: 15px;
             background: #ddd;
-            overflow: hidden;
-            margin-bottom: 30px;
+            border-radius: 10px;
+            margin: 10px 0;
         }
 
         .fill {
             height: 100%;
-            width: {{ score }}%;
+            border-radius: 10px;
             background: green;
-            transition: 0.5s;
         }
 
-        h3 {
+        .section {
+            text-align: left;
             margin-top: 20px;
-            color: #34495e;
+        }
+
+        .bad {
+            color: red;
+        }
+
+        .good {
+            color: green;
         }
 
         ul {
             padding-left: 20px;
         }
 
-        li {
-            margin: 8px 0;
-        }
-
-        .issues li {
-            color: #e74c3c;
-        }
-
-        .positives li {
-            color: #27ae60;
-        }
-
-        .suggestion {
+        .btn {
+            display: inline-block;
             margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            background: #ecf9f1;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .text-box {
-            margin-top: 20px;
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 14px;
-        }
-
-        .back-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
+            padding: 10px 20px;
             background: #2ecc71;
             color: white;
             text-decoration: none;
             border-radius: 8px;
         }
-
-        .back-btn:hover {
-            background: #27ae60;
-        }
     </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="card">
 
     <h2>HealthyMe Analysis</h2>
 
+    <!-- SCORE -->
     <div class="score">{{ score }}/100</div>
 
-    <!-- Progress Bar -->
     <div class="bar">
-        <div class="fill"></div>
+        <div class="fill" style="width: {{ score }}%;"></div>
     </div>
 
-    <!-- Issues -->
-    <h3>⚠ Issues</h3>
-    <ul class="issues">
-        {% for i in issues %}
-            <li>{{ i }}</li>
-        {% empty %}
-            <li>No major issues 🎉</li>
-        {% endfor %}
-    </ul>
+    <h3>{{ status }}</h3>
 
-    <!-- Positives -->
-    <h3>✅ Positives</h3>
-    <ul class="positives">
-        {% for p in positives %}
-            <li>{{ p }}</li>
-        {% empty %}
-            <li>No positives detected</li>
-        {% endfor %}
-    </ul>
-
-    <!-- Suggestion -->
-    <div class="suggestion">
-        {{ suggestion }}
+    <!-- ❌ ISSUES -->
+    <div class="section">
+        <h3 class="bad">❌ What’s Wrong</h3>
+        <ul>
+            {% for i in issues %}
+                <li>{{ i }}</li>
+            {% empty %}
+                <li>No major issues</li>
+            {% endfor %}
+        </ul>
     </div>
 
-    <!-- Extracted Text -->
-    <div class="text-box">
-        <strong>Extracted Text:</strong><br>
-        {{ text }}
+    <!-- ✅ GOOD -->
+    <div class="section">
+        <h3 class="good">✅ Good Things</h3>
+        <ul>
+            {% for p in positives %}
+                <li>{{ p }}</li>
+            {% empty %}
+                <li>No strong benefits</li>
+            {% endfor %}
+        </ul>
     </div>
 
-    <!-- Back Button -->
-    <a href="/scan/" class="back-btn">Scan Another Product</a>
+    <!-- TEXT -->
+    <div class="section">
+        <h4>Extracted Ingredients:</h4>
+        <p>{{ text }}</p>
+    </div>
+
+    <a href="/scan/" class="btn">Scan Another</a>
+    {% if text == "sugar palm oil maida preservative artificial color" %}
+<p style="color: orange;">⚠️ Could not detect text clearly. Showing demo analysis.</p>
+{% endif %}
+
+<h3>🔍 Detected Ingredients:</h3>
+<p style="background:#f4f4f4; padding:10px; border-radius:8px;">
+    {{ text|linebreaks }}
+</p> 
+
+{% if text|length < 10 %}
+<p style="color:red;">⚠️ Image not clear. Please upload a better image.</p>
+{% endif %}
 
 </div>
 

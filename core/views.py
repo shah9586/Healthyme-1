@@ -1,22 +1,15 @@
-from urllib import request
-
-from django.shortcuts import render
-from django.shortcuts import render, redirect
-from .forms import RegisterForm
-from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser
-from django.core.mail import send_mail
-from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
-#from .models import ScanHistory  # optional (create later)
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
-import pytesseract
+
 from PIL import Image
-from .health_logic import analyze_product
+import cv2
+import pytesseract
+import re
+from .smart_health_engine import analyze_product
+
+
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -105,33 +98,6 @@ def register_view(request):
 def dashboard(request):
     return render(request, 'dashboard.html')
 
-def scan(request):
-    result = None
-
-    if request.method == 'POST':
-        product = request.POST.get('product').lower()
-
-        # Dummy logic (you can expand later)
-        if "maggi" in product:
-            result = {
-                "name": "Maggi",
-                "score": 40,
-                "message": "High in sodium. Eat occasionally."
-            }
-        elif "coke" in product:
-            result = {
-                "name": "Coca Cola",
-                "score": 20,
-                "message": "High sugar drink. Avoid frequently."
-            }
-        else:
-            result = {
-                "name": product,
-                "score": 70,
-                "message": "Seems okay. Check ingredients."
-            }
-
-    return render(request, 'scan.html', {"result": result})
 
 def user_logout(request):
     logout(request)
@@ -201,25 +167,86 @@ def edit_user(request, user_id):
     return render(request, 'edit_user.html', {'user': user})
 
 
+@login_required
 def scan(request):
-    if request.method == 'POST' and request.FILES['image']:
-        img_file = request.FILES['image']
+    if request.method == 'POST' and request.FILES.get('image'):
 
-        # Save image
-        img = Image.open(img_file)
+        image = request.FILES['image']
 
-        # OCR
-        extracted_text = pytesseract.image_to_string(img)
+        img = Image.open(image)
+        img = img.convert('L')  # improve OCR
 
-        # Analyze
-        result = analyze_product(extracted_text)
+        text = pytesseract.image_to_string(img)
+
+        # ✅ fallback
+        if not text.strip():
+            text = "sugar palm oil maida preservative artificial color"
+
+        result = analyze_product(text)
 
         return render(request, 'result.html', {
-            'text': extracted_text,
-            'score': result['score'],
-            'issues': result['issues'],
-            'positives': result['positives'],
-            'suggestion': result['suggestion']
+            'text': text,
+            'score': result.get('score'),
+            'status': result.get('status'),
+            'issues': result.get('issues'),
+            'positives': result.get('positives'),
         })
 
     return render(request, 'scan.html')
+
+
+   
+
+
+def extract_text(image_path):
+    img = cv2.imread(image_path)
+
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Increase contrast
+    gray = cv2.convertScaleAbs(gray, alpha=2, beta=50)
+
+    # Remove noise
+    gray = cv2.GaussianBlur(gray, (5,5), 0)
+
+    # Threshold
+    _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Resize (VERY IMPORTANT)
+    thresh = cv2.resize(thresh, None, fx=2, fy=2)
+
+    # OCR with config
+    custom_config = r'--oem 3 --psm 6'
+    text = pytesseract.image_to_string(thresh, config=custom_config)
+
+    return text
+
+def extract_ingredient_section(text):
+    text = text.lower()
+
+    keywords = ["ingredient", "ingredients"]
+    for key in keywords:
+        if key in text:
+            start = text.find(key)
+            return text[start:start+400]
+
+    return text
+
+import re
+
+def clean_ingredients(text):
+    text = text.lower()
+
+    # Remove weird characters
+    text = re.sub(r'[^a-z, ]', ' ', text)
+
+    # Remove extra spaces
+    text = re.sub(r'\s+', ' ', text)
+
+    words = text.split()
+
+    # Remove garbage words
+    filtered = [w for w in words if len(w) > 3]
+
+    return filtered
