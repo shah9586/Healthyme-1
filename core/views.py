@@ -170,29 +170,46 @@ def edit_user(request, user_id):
 @login_required
 def scan(request):
     if request.method == 'POST' and request.FILES.get('image'):
+        image_file = request.FILES['image']
 
-        image = request.FILES['image']
+        # ✅ Pass image directly to Gemini (no Tesseract needed anymore)
+        result = analyze_product(image_file=image_file)
 
-        img = Image.open(image)
-        img = img.convert('L')  # improve OCR
-
-        text = pytesseract.image_to_string(img)
-
-        # ✅ fallback
-        if not text.strip():
-            text = "sugar palm oil maida preservative artificial color"
-
-        result = analyze_product(text)
+        # ✅ Save scan to database
+        from .models import ProductScan
+        scan_obj = ProductScan.objects.create(
+            user=request.user,
+            product_name=result.get('product_name', 'Unknown'),
+            health_score=result.get('score', 0),
+            grade=result.get('grade', 'F'),
+            summary=result.get('summary', ''),
+            positives=result.get('positives', []),
+            negatives=result.get('issues', []),
+            recommendations=result.get('recommendations', []),
+            points_earned=_calc_points(result.get('score', 0)),
+        )
 
         return render(request, 'result.html', {
-            'text': text,
-            'score': result.get('score'),
-            'status': result.get('status'),
-            'issues': result.get('issues'),
-            'positives': result.get('positives'),
+            'score':           result.get('score'),
+            'grade':           result.get('grade'),
+            'status':          result.get('status'),
+            'product_name':    result.get('product_name'),
+            'summary':         result.get('summary'),
+            'issues':          result.get('issues'),
+            'positives':       result.get('positives'),
+            'recommendations': result.get('recommendations'),
+            'points_earned':   scan_obj.points_earned,
         })
 
     return render(request, 'scan.html')
+
+
+def _calc_points(score):
+    if score >= 85: return 50
+    if score >= 70: return 30
+    if score >= 50: return 15
+    if score >= 30: return 8
+    return 3
 
 
    
