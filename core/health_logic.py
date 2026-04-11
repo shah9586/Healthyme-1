@@ -94,3 +94,79 @@ def analyze_product(text):
         "positives": positives,
         "suggestion": suggestion
     }
+def analyze_product_text(raw_text, product_name="Unknown Product", confidence="medium"):
+    text = (raw_text or "").lower()
+
+    unhealthy_items = {
+        "sugar": ("Contains added sugar", 18),
+        "glucose": ("Contains glucose", 12),
+        "fructose": ("Contains fructose", 12),
+        "corn syrup": ("Contains syrup-based sweetener", 15),
+        "palm oil": ("Contains palm oil", 15),
+        "hydrogenated": ("Contains hydrogenated fat", 20),
+        "maida": ("Contains refined flour (maida)", 18),
+        "refined wheat flour": ("Contains refined flour", 18),
+        "preservative": ("Contains preservatives", 10),
+        "artificial color": ("Contains artificial colors", 12),
+        "msg": ("Contains MSG", 10),
+    }
+
+    healthy_items = {
+        "fiber": ("Contains fiber", 6),
+        "protein": ("Contains protein", 6),
+        "oats": ("Contains oats", 8),
+        "whole grain": ("Contains whole grains", 10),
+        "millets": ("Contains millets", 10),
+        "calcium": ("Contains calcium", 4),
+        "iron": ("Contains iron", 4),
+        "vitamin": ("Contains vitamins", 4),
+    }
+
+    issues = []
+    positives = []
+    score = 100
+
+    if len(text.strip()) < 20:
+        return {
+            "product_name": product_name,
+            "score": 25,
+            "status": "Uncertain ⚠️",
+            "issues": [
+                "Could not read enough product information clearly",
+                "Result is not reliable from this input"
+            ],
+            "positives": [],
+            "text": raw_text or "",
+            "confidence": "low",
+            "source": "image"
+        }
+
+    for item, (reason, points) in unhealthy_items.items():
+        if item in text:
+            issues.append(reason)
+            score -= points
+
+    for item, (reason, points) in healthy_items.items():
+        if item in text:
+            positives.append(reason)
+            score += points
+
+    score = max(0, min(score, 100))
+
+    if score >= 75:
+        status = "Healthy ✅"
+    elif score >= 45:
+        status = "Moderate ⚠️"
+    else:
+        status = "Unhealthy ❌"
+
+    return {
+        "product_name": product_name,
+        "score": score,
+        "status": status,
+        "issues": list(dict.fromkeys(issues)),
+        "positives": list(dict.fromkeys(positives)),
+        "text": raw_text or "",
+        "confidence": confidence,
+        "source": "barcode" if confidence == "high" else "image"
+    }

@@ -1,37 +1,34 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
+from core.models import ProductIndex
 
-from PIL import Image
-import cv2
-import pytesseract
 import re
-from .smart_health_engine import analyze_product
-
-
+import requests
+import pytesseract
+from PIL import Image, ImageFilter, ImageOps
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-
 User = get_user_model()
+
+
+# ---------------- HOME / AUTH ----------------
 
 def home(request):
     return render(request, 'home.html')
+
 
 def auth_choice(request):
     return render(request, 'auth_choice.html')
 
 
-
-# LOGIN (email OR contact)
 def login_view(request):
     error = ""
 
     if request.method == 'POST':
         username_input = request.POST.get('username')
         password = request.POST.get('password')
-
         user = None
 
         if '@' in username_input:
@@ -55,33 +52,27 @@ def login_view(request):
                 error = "❌ Incorrect password"
 
     return render(request, 'login.html', {'error': error})
-    
-   
+
+
 def register_view(request):
     if request.method == 'POST':
         data = request.POST
-
         password1 = data.get('password1')
         password2 = data.get('password2')
 
-        # ✅ PASSWORD MATCH CHECK (IMPORTANT)
         if password1 != password2:
             return render(request, 'register.html', {
                 'error': '❌ Passwords do not match'
             })
 
-        # ✅ STRONG PASSWORD CHECK
-        import re
         if not re.match(r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).{8,}$', password1):
             return render(request, 'register.html', {
                 'error': '❌ Password must be strong (8+ chars, capital, number, special char)'
             })
 
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
+        UserModel = get_user_model()
 
-        # ✅ CREATE USER
-        user = User.objects.create_user(
+        UserModel.objects.create_user(
             username=data['email'],
             email=data['email'],
             first_name=data['first_name'],
@@ -95,6 +86,7 @@ def register_view(request):
     return render(request, 'register.html')
 
 
+@login_required
 def dashboard(request):
     return render(request, 'dashboard.html')
 
@@ -104,30 +96,8 @@ def user_logout(request):
     return redirect('/')
 
 
+# ---------------- ADMIN ----------------
 
-
-User = get_user_model()
-
-@login_required
-def admin_dashboard(request):
-    users = User.objects.all()
-
-    return render(request, 'admin_dashboard.html', {
-        'users': users
-    })
-
-
-@login_required
-def admin_dashboard(request):
-    if not request.user.is_superuser:
-        return redirect('/')
-
-    users = User.objects.all()
-
-    return render(request, 'admin_dashboard.html', {'users': users})
-
-
-# ADMIN DASHBOARD (READ)
 @login_required
 def admin_dashboard(request):
     if not request.user.is_superuser:
@@ -137,7 +107,6 @@ def admin_dashboard(request):
     return render(request, 'admin_dashboard.html', {'users': users})
 
 
-# DELETE USER
 @login_required
 def delete_user(request, user_id):
     if not request.user.is_superuser:
@@ -148,7 +117,6 @@ def delete_user(request, user_id):
     return redirect('/admin-dashboard/')
 
 
-# UPDATE USER
 @login_required
 def edit_user(request, user_id):
     if not request.user.is_superuser:
@@ -167,103 +135,524 @@ def edit_user(request, user_id):
     return render(request, 'edit_user.html', {'user': user})
 
 
+# ---------------- HELPERS ----------------
+
+def clean_text(text):
+    text = (text or "").lower()
+    text = re.sub(r"[^a-z0-9\s\-\.,]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def preprocess_image_for_ocr(uploaded_file):
+    img = Image.open(uploaded_file).convert("L")
+    img = ImageOps.autocontrast(img)
+    img = img.filter(ImageFilter.SHARPEN)
+    threshold = 160
+    img = img.point(lambda p: 255 if p > threshold else 0)
+    return img
+
+
+# ---------------- HEALTH ANALYSIS ----------------
+
+def analyze_product_text(raw_text, product_name="Unknown Product"):
+    text = clean_text(raw_text)
+    combined_name_text = f"{product_name} {text}".lower()
+
+    unhealthy_items = {
+        "sugar": ("Contains added sugar", 18),
+        "glucose": ("Contains glucose", 12),
+        "fructose": ("Contains fructose", 12),
+        "corn syrup": ("Contains syrup-based sweetener", 15),
+        "palm oil": ("Contains palm oil", 15),
+        "hydrogenated": ("Contains hydrogenated fat", 20),
+        "maida": ("Contains refined flour (maida)", 18),
+        "refined wheat flour": ("Contains refined flour", 18),
+        "preservative": ("Contains preservatives", 10),
+        "artificial color": ("Contains artificial colors", 12),
+        "msg": ("Contains MSG", 10),
+        "flavour enhancer": ("Contains flavour enhancer", 10),
+    }
+
+    healthy_items = {
+        "fiber": ("Contains fiber", 6),
+        "protein": ("Contains protein", 6),
+        "oats": ("Contains oats", 8),
+        "whole grain": ("Contains whole grains", 10),
+        "millets": ("Contains millets", 10),
+        "calcium": ("Contains calcium", 4),
+        "iron": ("Contains iron", 4),
+        "vitamin": ("Contains vitamins", 4),
+        "milk": ("Natural dairy source", 8),
+    }
+
+    bad_product_hints = {
+        "biscuit": ("Highly processed snack", 10),
+        "cookie": ("Highly processed snack", 10),
+        "chips": ("Fried processed snack", 15),
+        "soft drink": ("Sugary processed beverage", 20),
+        "cola": ("Sugary processed beverage", 20),
+        "sprite": ("Sugary soft drink", 20),
+        "fanta": ("Sugary soft drink", 20),
+        "pepsi": ("Sugary soft drink", 20),
+        "coca cola": ("Sugary soft drink", 20),
+        "instant noodles": ("Highly processed instant food", 15),
+        "chocolate": ("Sugar-rich processed product", 12),
+        "milkshake": ("Often contains added sugar", 12),
+        "bread": ("May contain refined flour", 8),
+    }
+
+    issues = []
+    positives = []
+    score = 100
+
+    weak_text = len(text) < 20 or text.count(" ") < 3
+    if weak_text:
+        for item, (reason, points) in bad_product_hints.items():
+            if item in combined_name_text:
+                issues.append(reason)
+                score -= points
+
+        score = max(0, min(score, 100))
+
+        if issues:
+            status = "Moderate ⚠️" if score >= 45 else "Unhealthy ❌"
+            return {
+                "product_name": product_name,
+                "score": score,
+                "status": status,
+                "issues": list(dict.fromkeys(issues)),
+                "positives": [],
+                "text": raw_text or "",
+                "confidence": "medium",
+                "source": "analysis"
+            }
+
+        return {
+            "product_name": product_name,
+            "score": None,
+            "status": "Insufficient Data ⚠️",
+            "issues": [
+                "Not enough ingredient or nutrition data was available to calculate a reliable score."
+            ],
+            "positives": [],
+            "text": raw_text or "",
+            "confidence": "low",
+            "source": "analysis"
+        }
+
+    for item, (reason, points) in unhealthy_items.items():
+        if item in text:
+            issues.append(reason)
+            score -= points
+
+    for item, (reason, points) in healthy_items.items():
+        if item in text:
+            positives.append(reason)
+            score += points
+
+    for item, (reason, points) in bad_product_hints.items():
+        if item in combined_name_text:
+            issues.append(reason)
+            score -= points
+
+    sugar_match = re.search(r"sugars?\s*(\d+(\.\d+)?)\s*g", text)
+    if sugar_match:
+        sugar = float(sugar_match.group(1))
+        if sugar > 15:
+            issues.append(f"High sugar ({sugar}g/100g)")
+            score -= 20
+        elif sugar > 8:
+            issues.append(f"Moderate sugar ({sugar}g/100g)")
+            score -= 10
+
+    fat_match = re.search(r"fat\s*(\d+(\.\d+)?)\s*g", text)
+    if fat_match:
+        fat = float(fat_match.group(1))
+        if fat > 20:
+            issues.append(f"High fat ({fat}g/100g)")
+            score -= 12
+
+    fiber_match = re.search(r"fiber\s*(\d+(\.\d+)?)\s*g", text)
+    if fiber_match:
+        fiber = float(fiber_match.group(1))
+        if fiber >= 5:
+            positives.append(f"Good fiber ({fiber}g/100g)")
+            score += 8
+        elif fiber < 2:
+            issues.append(f"Low fiber ({fiber}g/100g)")
+            score -= 8
+
+    protein_match = re.search(r"protein\s*(\d+(\.\d+)?)\s*g", text)
+    if protein_match:
+        protein = float(protein_match.group(1))
+        if protein >= 8:
+            positives.append(f"Good protein ({protein}g/100g)")
+            score += 8
+
+    score = max(0, min(score, 100))
+
+    if score >= 75:
+        status = "Healthy ✅"
+    elif score >= 45:
+        status = "Moderate ⚠️"
+    else:
+        status = "Unhealthy ❌"
+
+    return {
+        "product_name": product_name,
+        "score": score,
+        "status": status,
+        "issues": list(dict.fromkeys(issues)),
+        "positives": list(dict.fromkeys(positives)),
+        "text": raw_text or "",
+        "confidence": "high",
+        "source": "analysis"
+    }
+
+
+def get_healthier_recommendation(product_name, text, score):
+    if score is None or score >= 50:
+        return None
+
+    combined = f"{product_name} {text}".lower()
+
+    # Strong priority order
+    category_keywords = [
+        ("chocolate", ["kitkat", "dairy milk", "munch", "perk", "5 star", "chocolate", "cocoa"]),
+        ("biscuit", ["biscuit", "cookie", "cracker", "hide & seek", "oreo", "parle"]),
+        ("chips", ["chips", "kurkure", "nachos", "lays", "wafers"]),
+        ("soft_drink", ["sprite", "coca cola", "coke", "pepsi", "fanta", "soft drink", "cola", "soda"]),
+        ("noodles", ["noodles", "maggi", "yippee", "instant noodles"]),
+        ("ice_cream", ["ice cream", "frozen dessert"]),
+        ("juice", ["juice", "fruit drink"]),
+        ("milkshake", ["milkshake", "shake"]),
+        ("bread", ["bread", "bun", "pav"]),
+        ("butter", ["butter", "cheese spread"]),
+    ]
+
+    matched_category = None
+
+    for category, keywords in category_keywords:
+        if any(keyword in combined for keyword in keywords):
+            matched_category = category
+            break
+
+    recommendation_map = {
+        "chocolate": {
+            "category": "Chocolate",
+            "options": [
+                {"name": "Dark Chocolate (70%+ cocoa)", "query": "dark chocolate 70 cocoa"},
+                {"name": "Dates with Nuts", "query": "dates with nuts snack"},
+                {"name": "Roasted Almond Snack", "query": "roasted almonds snack"}
+            ]
+        },
+        "biscuit": {
+            "category": "Biscuit",
+            "options": [
+                {"name": "Oats Biscuit", "query": "oats biscuit"},
+                {"name": "Whole Wheat Biscuit", "query": "whole wheat biscuit"},
+                {"name": "Ragi Biscuit", "query": "ragi biscuit"}
+            ]
+        },
+        "chips": {
+            "category": "Chips",
+            "options": [
+                {"name": "Roasted Makhana", "query": "roasted makhana"},
+                {"name": "Baked Chips", "query": "baked chips"},
+                {"name": "Khakhra", "query": "khakhra healthy snack"}
+            ]
+        },
+        "soft_drink": {
+            "category": "Soft Drink",
+            "options": [
+                {"name": "Coconut Water", "query": "coconut water"},
+                {"name": "Lemon Water", "query": "lemon water drink"},
+                {"name": "Buttermilk", "query": "buttermilk drink"}
+            ]
+        },
+        "noodles": {
+            "category": "Instant Noodles",
+            "options": [
+                {"name": "Oats Noodles", "query": "oats noodles"},
+                {"name": "Whole Wheat Noodles", "query": "whole wheat noodles"},
+                {"name": "Millet Noodles", "query": "millet noodles"}
+            ]
+        },
+        "ice_cream": {
+            "category": "Ice Cream",
+            "options": [
+                {"name": "Frozen Yogurt", "query": "frozen yogurt"},
+                {"name": "Fruit Yogurt", "query": "fruit yogurt"},
+                {"name": "Homemade Fruit Smoothie", "query": "fruit smoothie"}
+            ]
+        },
+        "juice": {
+            "category": "Juice",
+            "options": [
+                {"name": "Fresh Fruit", "query": "fresh fruits"},
+                {"name": "Unsweetened Juice", "query": "unsweetened juice"},
+                {"name": "Coconut Water", "query": "coconut water"}
+            ]
+        },
+        "milkshake": {
+            "category": "Milkshake",
+            "options": [
+                {"name": "Unsweetened Smoothie", "query": "unsweetened smoothie"},
+                {"name": "Protein Milk Drink", "query": "protein milk drink"},
+                {"name": "Buttermilk", "query": "buttermilk drink"}
+            ]
+        },
+        "bread": {
+            "category": "Bread",
+            "options": [
+                {"name": "Whole Wheat Bread", "query": "whole wheat bread"},
+                {"name": "Multigrain Bread", "query": "multigrain bread"},
+                {"name": "Brown Bread", "query": "brown bread"}
+            ]
+        },
+        "butter": {
+            "category": "Butter",
+            "options": [
+                {"name": "Low Fat Paneer", "query": "low fat paneer"},
+                {"name": "Greek Yogurt", "query": "greek yogurt"},
+                {"name": "Nut Butter", "query": "natural peanut butter"}
+            ]
+        }
+    }
+
+    default_rec = {
+        "category": "Healthy Alternatives",
+        "options": [
+            {"name": "Fresh Fruit", "query": "fresh fruits"},
+            {"name": "Roasted Snacks", "query": "roasted snacks"},
+            {"name": "Whole Grain Options", "query": "whole grain snacks"}
+        ]
+    }
+
+    rec = recommendation_map.get(matched_category, default_rec)
+
+    # Add shopping/search links
+    for option in rec["options"]:
+        q = option["query"].replace(" ", "+")
+        option["amazon_link"] = f"https://www.amazon.in/s?k={q}"
+        option["bigbasket_link"] = f"https://www.bigbasket.com/ps/?q={q}"
+        option["jiomart_link"] = f"https://www.jiomart.com/search/{q}"
+
+    return rec
+
+
+# ---------------- DATA LOOKUP ----------------
+
+def fetch_from_local_db(barcode=None, product_name=None):
+    if barcode:
+        product = ProductIndex.objects.filter(barcode=str(barcode).strip()).first()
+        if product:
+            text = " ".join(filter(None, [
+                product.name,
+                product.categories,
+                product.ingredients,
+                product.brands
+            ])).strip()
+
+            return {
+                "product_name": product.name or "Unknown Product",
+                "text": text,
+                "lookup_source": "local db"
+            }
+
+    if product_name:
+        product = ProductIndex.objects.filter(name__icontains=product_name.strip()).first()
+        if product:
+            text = " ".join(filter(None, [
+                product.name,
+                product.categories,
+                product.ingredients,
+                product.brands
+            ])).strip()
+
+            return {
+                "product_name": product.name or "Unknown Product",
+                "text": text,
+                "lookup_source": "local db"
+            }
+
+    return None
+
+
+def fetch_product_by_barcode(barcode):
+    try:
+        url = f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json"
+        response = requests.get(url, timeout=8)
+
+        if response.status_code != 200:
+            return None
+
+        data = response.json()
+        if data.get("status") != 1:
+            return None
+
+        product = data.get("product", {})
+        nutriments = product.get("nutriments", {})
+
+        extras = []
+        for key, label in [
+            ("sugars_100g", "sugar"),
+            ("fat_100g", "fat"),
+            ("proteins_100g", "protein"),
+            ("fiber_100g", "fiber"),
+            ("salt_100g", "salt"),
+        ]:
+            value = nutriments.get(key)
+            if value not in [None, ""]:
+                extras.append(f"{label} {value}g")
+
+        text = " ".join(filter(None, [
+            product.get("product_name", ""),
+            product.get("ingredients_text", ""),
+            product.get("categories", ""),
+            product.get("brands", ""),
+            " ".join(extras),
+        ])).strip()
+
+        if not text:
+            return None
+
+        return {
+            "product_name": product.get("product_name", "Unknown Product"),
+            "text": text,
+            "lookup_source": "api"
+        }
+
+    except Exception as e:
+        print("BARCODE API ERROR:", e)
+        return None
+
+
+def fetch_product_by_name(product_name):
+    try:
+        url = "https://world.openfoodfacts.org/cgi/search.pl"
+        params = {
+            "search_terms": product_name,
+            "search_simple": 1,
+            "action": "process",
+            "json": 1,
+            "page_size": 1
+        }
+
+        response = requests.get(url, params=params, timeout=8)
+        if response.status_code != 200:
+            return None
+
+        data = response.json()
+        products = data.get("products", [])
+        if not products:
+            return None
+
+        product = products[0]
+        nutriments = product.get("nutriments", {})
+
+        extras = []
+        for key, label in [
+            ("sugars_100g", "sugar"),
+            ("fat_100g", "fat"),
+            ("proteins_100g", "protein"),
+            ("fiber_100g", "fiber"),
+            ("salt_100g", "salt"),
+        ]:
+            value = nutriments.get(key)
+            if value not in [None, ""]:
+                extras.append(f"{label} {value}g")
+
+        text = " ".join(filter(None, [
+            product.get("product_name", ""),
+            product.get("ingredients_text", ""),
+            product.get("categories", ""),
+            product.get("brands", ""),
+            " ".join(extras),
+        ])).strip()
+
+        if not text:
+            return None
+
+        return {
+            "product_name": product.get("product_name", product_name),
+            "text": text,
+            "lookup_source": "api"
+        }
+
+    except Exception as e:
+        print("NAME API ERROR:", e)
+        return None
+
+
+def fetch_product_advanced(barcode=None, product_name=None):
+    local_product = fetch_from_local_db(barcode=barcode, product_name=product_name)
+
+    if local_product and len(clean_text(local_product["text"])) >= 20:
+        return local_product
+
+    if barcode:
+        api_product = fetch_product_by_barcode(barcode)
+        if api_product and len(clean_text(api_product["text"])) >= 20:
+            return api_product
+
+    if product_name:
+        api_product = fetch_product_by_name(product_name)
+        if api_product and len(clean_text(api_product["text"])) >= 20:
+            return api_product
+
+    if local_product:
+        return local_product
+
+    return None
+
+
+# ---------------- MAIN SCAN VIEW ----------------
+
 @login_required
 def scan(request):
-    if request.method == 'POST' and request.FILES.get('image'):
-        image_file = request.FILES['image']
+    if request.method == "POST":
+        barcode = request.POST.get("barcode", "").strip()
+        product_name_input = request.POST.get("product_name", "").strip()
 
-        # ✅ Pass image directly to Gemini (no Tesseract needed anymore)
-        result = analyze_product(image_file=image_file)
-
-        # ✅ Save scan to database
-        from .models import ProductScan
-        scan_obj = ProductScan.objects.create(
-            user=request.user,
-            product_name=result.get('product_name', 'Unknown'),
-            health_score=result.get('score', 0),
-            grade=result.get('grade', 'F'),
-            summary=result.get('summary', ''),
-            positives=result.get('positives', []),
-            negatives=result.get('issues', []),
-            recommendations=result.get('recommendations', []),
-            points_earned=_calc_points(result.get('score', 0)),
+        product = fetch_product_advanced(
+            barcode=barcode if barcode else None,
+            product_name=product_name_input if product_name_input else None
         )
 
-        return render(request, 'result.html', {
-            'score':           result.get('score'),
-            'grade':           result.get('grade'),
-            'status':          result.get('status'),
-            'product_name':    result.get('product_name'),
-            'summary':         result.get('summary'),
-            'issues':          result.get('issues'),
-            'positives':       result.get('positives'),
-            'recommendations': result.get('recommendations'),
-            'points_earned':   scan_obj.points_earned,
+        if product:
+            result = analyze_product_text(
+                product["text"],
+                product_name=product["product_name"]
+            )
+
+            recommendation = get_healthier_recommendation(
+                product["product_name"],
+                product["text"],
+                result["score"]
+            )
+
+            result["recommendation"] = recommendation
+            result["barcode"] = barcode if barcode else ""
+            result["source"] = product.get("lookup_source", "unknown")
+            result["confidence"] = "high" if product.get("lookup_source") in [
+                "local db", "api"
+            ] else "medium"
+
+            return render(request, "result.html", result)
+
+        return render(request, "result.html", {
+            "product_name": product_name_input if product_name_input else "Unknown Product",
+            "barcode": barcode if barcode else "",
+            "score": None,
+            "status": "Product Not Found ❌",
+            "issues": ["No product data found in local database or API."],
+            "positives": [],
+            "text": "",
+            "confidence": "low",
+            "source": "not found",
+            "recommendation": None,
         })
 
-    return render(request, 'scan.html')
-
-
-def _calc_points(score):
-    if score >= 85: return 50
-    if score >= 70: return 30
-    if score >= 50: return 15
-    if score >= 30: return 8
-    return 3
-
-
-   
-
-
-def extract_text(image_path):
-    img = cv2.imread(image_path)
-
-    # Convert to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # Increase contrast
-    gray = cv2.convertScaleAbs(gray, alpha=2, beta=50)
-
-    # Remove noise
-    gray = cv2.GaussianBlur(gray, (5,5), 0)
-
-    # Threshold
-    _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    # Resize (VERY IMPORTANT)
-    thresh = cv2.resize(thresh, None, fx=2, fy=2)
-
-    # OCR with config
-    custom_config = r'--oem 3 --psm 6'
-    text = pytesseract.image_to_string(thresh, config=custom_config)
-
-    return text
-
-def extract_ingredient_section(text):
-    text = text.lower()
-
-    keywords = ["ingredient", "ingredients"]
-    for key in keywords:
-        if key in text:
-            start = text.find(key)
-            return text[start:start+400]
-
-    return text
-
-import re
-
-def clean_ingredients(text):
-    text = text.lower()
-
-    # Remove weird characters
-    text = re.sub(r'[^a-z, ]', ' ', text)
-
-    # Remove extra spaces
-    text = re.sub(r'\s+', ' ', text)
-
-    words = text.split()
-
-    # Remove garbage words
-    filtered = [w for w in words if len(w) > 3]
-
-    return filtered
+    return render(request, "scan.html")

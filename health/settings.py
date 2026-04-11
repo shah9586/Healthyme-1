@@ -141,3 +141,5 @@ EMAIL_HOST_USER = 'your_email@gmail.com'
 EMAIL_HOST_PASSWORD = 'your_app_password'
 
 LOGOUT_REDIRECT_URL = '/'
+
+GEMINI_API_KEY = "AIzaSyDSRLx1Fw6B4VCMKxYGmNtnnc6B6tSgLp4"

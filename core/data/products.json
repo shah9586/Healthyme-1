@@ -1,0 +1,55 @@
+[
+  {
+    "barcode": "8901719100050",
+    "name": "Parle-G Biscuit",
+    "ingredients": "refined wheat flour, sugar, palm oil, milk solids"
+  },
+  {
+    "barcode": "8901030895451",
+    "name": "Maggi 2-Minute Noodles",
+    "ingredients": "refined wheat flour, palm oil, salt, sugar, flavour enhancer, msg"
+  },
+  {
+    "barcode": "8901262020017",
+    "name": "Amul Butter",
+    "ingredients": "milk fat, salt"
+  }
+]
+
+[
+  {
+    "barcode": "8901262200196",
+    "name": "Amul Milk",
+    "ingredients": "milk, fortified with vitamin a, vitamin d"
+  },
+  
+ 
+  {
+    "barcode": "8901030895451",
+    "name": "Maggi 2-Minute Noodles",
+    "ingredients": "refined wheat flour, palm oil, salt, sugar, flavour enhancer, msg"
+  },
+  {
+    "barcode": "8901491101832",
+    "name": "Kurkure Masala Munch",
+    "ingredients": "corn meal, edible vegetable oil, rice meal, gram meal, spices, salt"
+  },
+  {
+    "barcode": "8901058000233",
+    "name": "Hide & Seek Biscuit",
+    "ingredients": "refined wheat flour, sugar, palm oil, cocoa solids, raising agents, emulsifiers"
+  },
+ 
+   {
+    "barcode": "8906002480729",
+    "name": "Coca Cola",
+    "ingredients": "carbonated water, sugar, acidity regulator, caramel color, caffeine"
+  }
+   {
+    "barcode": "8901262200196",
+    "name": "amul Buttermilk Masala",
+    "ingredients": " water, milk solids , iodised salt, condiments, permitted stabilizers"
+  }
+]
+
+

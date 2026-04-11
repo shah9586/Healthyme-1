@@ -24,3 +24,18 @@ class ProductScan(models.Model):
 
     def __str__(self):
         return f"{self.product_name} — {self.health_score}/100"
+    
+
+from django.db import models
+
+class ProductIndex(models.Model):
+    barcode = models.CharField(max_length=128, unique=True, db_index=True)
+    name = models.TextField(blank=True, null=True)
+    ingredients = models.TextField(blank=True, null=True)
+    categories = models.TextField(blank=True, null=True)
+    brands = models.TextField(blank=True, null=True)
+    countries = models.TextField(blank=True, null=True)
+    source = models.CharField(max_length=50, default="openfoodfacts")
+
+    def __str__(self):
+        return self.name or "Unknown"

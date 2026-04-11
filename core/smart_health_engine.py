@@ -8,7 +8,7 @@ import io
 from PIL import Image
 
 
-GEMINI_API_KEY = "AIzaSyAHX5fa9h-KpCbFBppyp1RbScgHJ3cFQ4c"
+GEMINI_API_KEY = "AIzaSyDSRLx1Fw6B4VCMKxYGmNtnnc6B6tSgLp4"
 
 
 def analyze_product(image_file=None, text=None):
