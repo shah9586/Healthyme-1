@@ -1,5 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth import get_user_model
+
+
 
 
 class CustomUser(AbstractUser):
@@ -39,3 +46,59 @@ class ProductIndex(models.Model):
 
     def __str__(self):
         return self.name or "Unknown"
+    
+
+
+
+class RewardWallet(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    points = models.IntegerField(default=0)
+    total_scans = models.IntegerField(default=0)
+    healthy_scans = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.points} points"
+
+
+class RewardHistory(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    action = models.CharField(max_length=100)
+    points_added = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.action} - {self.points_added}"
+    
+
+User = get_user_model()
+
+
+@receiver(post_save, sender=User)
+def create_reward_wallet(sender, instance, created, **kwargs):
+    if created:
+        RewardWallet.objects.create(user=instance)
+
+
+
+
+class ScanHistory(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=255)
+    barcode = models.CharField(max_length=100, blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+    status = models.CharField(max_length=100, blank=True, null=True)
+    harmful_ingredients = models.TextField(blank=True, null=True)
+    good_ingredients = models.TextField(blank=True, null=True)
+    scanned_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product_name} - {self.score}"
+    
+class CommunityPost(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.content[:30]}"

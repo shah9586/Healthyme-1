@@ -14,4 +14,9 @@ urlpatterns = [
     path('delete-user/<int:user_id>/', views.delete_user),
     path('edit-user/<int:user_id>/', views.edit_user), 
     #path('scan/', views.scan_product, name='scan')
+    path("rewards/", views.rewards_page, name="rewards"),
+    path("health-score/", views.health_score_page, name="health_score"),
+    path("ingredients/", views.ingredients_page, name="ingredients"),
+    path("rewards/", views.rewards_page, name="rewards"),
+    path("community/", views.community, name="community"),
 ]

@@ -178,6 +178,17 @@
             text-decoration: none;
             font-size: 14px;
             font-weight: 600;
+
+            .reward-box {
+                 margin: 14px 0;
+                 padding: 12px;
+                 background: #fff8e1;
+                 border-left: 5px solid #f1c40f;
+                 border-radius: 10px;
+                 font-size: 16px;
+                 font-weight: bold;
+                 text-align: center;
+}
         }
 
         .buy-btn:hover {
@@ -206,6 +217,12 @@
     {% endif %}
 
     <div class="status">{{ status }}</div>
+
+    {% if reward_points %}
+    <div class="reward-box">
+        🎁 Total Reward Points: <strong>{{ reward_points }}</strong>
+    </div>
+{% endif %}
 
     {% if score is not None %}
     <div class="bar">

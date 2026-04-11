@@ -2,346 +2,384 @@
 <html>
 <head>
     <title>Dashboard - HealthyMe</title>
-   <style>
-    
-    * {
-        box-sizing: border-box;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: #f4fdf7;
-    min-height: 100vh;
-}
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #f4fdf7;
+            min-height: 100vh;
+        }
 
-/* NAVBAR */
-.navbar {
-    background: linear-gradient(90deg, #27ae60, #2ecc71);
-    padding: 15px 40px;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-}
+        /* NAVBAR */
+        .navbar {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            padding: 15px 40px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-/* HERO SECTION */
-.hero {
-    height: 300px;
-    background: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352') no-repeat center/cover;
-    display: flex;
-    align-items: center;
-    padding: 40px;
-    color: white;
-    position: relative;
-}
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 10px;
+        }
 
-.hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-}
+        .navbar a:hover {
+            text-decoration: underline;
+        }
 
-.hero-text {
-    position: relative;
-    max-width: 500px;
-}
+        /* HERO SECTION */
+        .hero {
+            height: 300px;
+            background: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352') no-repeat center/cover;
+            display: flex;
+            align-items: center;
+            padding: 40px;
+            color: white;
+            position: relative;
+        }
 
-.hero h1 {
-    margin: 0;
-    font-size: 32px;
-}
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
 
-.hero p {
-    margin: 10px 0 20px;
-}
+        .hero-text {
+            position: relative;
+            max-width: 500px;
+            z-index: 1;
+            animation: fadeUp 0.8s ease;
+        }
 
-.hero-btn {
-    padding: 12px 25px;
-    background: #27ae60;
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    transition: 0.3s;
-}
+        .hero h1 {
+            margin: 0;
+            font-size: 32px;
+        }
 
-.hero-btn:hover {
-    background: #219150;
-    transform: scale(1.05);
-}
+        .hero p {
+            margin: 10px 0 20px;
+        }
 
-/* STATS */
-.stats {
-    display: flex;
-    justify-content: space-around;
-    margin-top: -50px;
-    padding: 0 20px;
-}
+        .hero-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #27ae60;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
 
-.stat-card {
-    background: white;
-    padding: 20px;
-    width: 200px;
-    text-align: center;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-}
+        .hero-btn:hover {
+            background: #219150;
+            transform: scale(1.05);
+        }
 
-.stat-card h2 {
-    margin: 0;
-    color: #27ae60;
-}
+        /* CONTAINER */
+        .container {
+            padding: 40px;
+        }
 
-/* CONTAINER */
-.container {
-    padding: 40px;
-}
+        /* FEATURE TITLE */
+        .feature-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 20px;
+            animation: fadeUp 0.8s ease;
+        }
 
-/* CARDS */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 25px;
-}
+        /* FEATURE CARDS */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
 
-.card {
-    background: white;
-    padding: 25px;
-    border-radius: 18px;
-    text-decoration: none;
-    color: black;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: 0.4s;
-}
+        .card {
+            display: block;
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            text-decoration: none;
+            color: black;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: 0.4s;
+            animation: fadeUp 0.8s ease;
+        }
 
-.card:hover {
-    transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
+        .card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
 
-.card h3 {
-    margin: 0;
-    color: #27ae60;
-}
+        .card h3 {
+            margin: 0 0 10px 0;
+            color: #27ae60;
+            font-size: 28px;
+            text-decoration: none;
+        }
 
-.card p {
-    font-size: 13px;
-    color: #666;
-}
-    .graph-section {
-    padding: 40px;
-}
+        .card p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+            text-decoration: none;
+            line-height: 1.5;
+        }
 
-.graph-box {
-    display: flex;
-    align-items: flex-end;
-    gap: 15px;
-    height: 200px;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-}
+        .card * {
+            text-decoration: none !important;
+        }
 
-.bar {
-    flex: 1;
-    background: linear-gradient(#27ae60, #2ecc71);
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-    font-size: 12px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 5px;
-    transition: 0.3s;
-}
+        /* GRAPH SECTION */
+        .graph-section {
+            padding: 40px;
+        }
 
-.bar:hover {
-    transform: scale(1.1);
-}
-<div class="ai-section">
-    <h2>AI Health Suggestions 🤖</h2>
+        .graph-section h2 {
+            animation: fadeUp 0.8s ease;
+        }
 
-    <div class="ai-box">
-        <p>⚠️ You consumed high sugar products this week.</p>
-        <p>✅ Try adding more fruits and vegetables.</p>
-        <p>💧 Drink at least 2L of water daily.</p>
-    </div>
-</div>
-.graph-box, .ai-box {
-    animation: fadeUp 0.8s ease;
-}
-/* FOOTER */
-.footer {
-    background: linear-gradient(90deg, #27ae60, #2ecc71);
-    color: white;
-    margin-top: 40px;
-    padding-top: 30px;
-}
+        .graph-box {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 200px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeUp 0.8s ease;
+        }
 
-.footer-content {
-    display: flex;
-    justify-content: space-around;
-    padding: 20px 40px;
-    flex-wrap: wrap;
-}
+        .bar {
+            flex: 1;
+            background: linear-gradient(#27ae60, #2ecc71);
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 5px;
+            transition: 0.3s;
+        }
 
-.footer-section {
-    max-width: 250px;
-}
+        .bar:hover {
+            transform: scale(1.08);
+        }
 
-.footer-section h3,
-.footer-section h4 {
-    margin-bottom: 10px;
-}
+        /* AI SECTION */
+        .ai-section {
+            padding: 0 40px 20px;
+            animation: fadeUp 0.8s ease;
+        }
 
-.footer-section p {
-    font-size: 13px;
-    margin: 5px 0;
-    opacity: 0.9;
-    transition: 0.3s;
-}
+        .ai-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            line-height: 1.9;
+        }
 
-/* Hover effect */
-.footer-section p:hover {
-    opacity: 1;
-    transform: translateX(5px);
-}
+        .ai-box p {
+            margin: 0 0 8px 0;
+        }
 
-.footer-bottom {
-    text-align: center;
-    padding: 15px;
-    font-size: 12px;
-    background: rgba(0,0,0,0.1);
-}
-.footer {
-    animation: fadeUp 1s ease;
-}
-</style>
+        /* FOOTER */
+        .footer {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            color: white;
+            margin-top: 40px;
+            padding-top: 30px;
+            animation: fadeUp 1s ease;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 40px;
+            flex-wrap: wrap;
+        }
+
+        .footer-section {
+            max-width: 250px;
+        }
+
+        .footer-section h3,
+        .footer-section h4 {
+            margin-bottom: 10px;
+        }
+
+        .footer-section p {
+            font-size: 13px;
+            margin: 5px 0;
+            opacity: 0.9;
+            transition: 0.3s;
+        }
+
+        .footer-section p:hover {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        /* ANIMATION */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .hero {
+                height: auto;
+                padding: 30px 20px;
+            }
+
+            .container,
+            .graph-section,
+            .ai-section {
+                padding: 20px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-    <div>HealthyMe</div>
-    <div>
-        {{ request.user.first_name }} |
-        <a href="/logout/">Logout</a>
-    </div>
-</div>
-
-<!-- HERO SECTION -->
-<div class="hero">
-    <div class="hero-text">
-        <h1>Welcome, {{ request.user.first_name }} 👋</h1>
-        <p>Track your food. Improve your health. Live smarter.</p>
-        <a href="/scan/" class="hero-btn">Start Scanning</a>
-    </div>
-</div>
-<div class="graph-section">
-    <h2>Your Weekly Health Trend</h2>
-
-    <div class="graph-box">
-        <div class="bar" style="height: 60%;">Mon</div>
-        <div class="bar" style="height: 80%;">Tue</div>
-        <div class="bar" style="height: 50%;">Wed</div>
-        <div class="bar" style="height: 90%;">Thu</div>
-        <div class="bar" style="height: 70%;">Fri</div>
-        <div class="bar" style="height: 85%;">Sat</div>
-        <div class="bar" style="height: 75%;">Sun</div>
-    </div>
-</div>
-<div class="ai-section">
-    <h2>AI Health Suggestions 🤖</h2>
-
-    <div class="ai-box">
-        <p>⚠️ You consumed high sugar products this week.</p>
-        <p>✅ Try adding more fruits and vegetables.</p>
-        <p>💧 Drink at least 2L of water daily.</p>
-    </div>
-</div>
-
-{% comment %} <!-- STATS SECTION -->
-<div class="stats">
-    <div class="stat-card">
-        <h2>12</h2>
-        <p>Products Scanned</p>
-    </div>
-    <div class="stat-card">
-        <h2>78%</h2>
-        <p>Avg Health Score</p>
-    </div>
-    <div class="stat-card">
-        <h2>5</h2>
-        <p>Rewards Earned</p>
-    </div>
-</div> {% endcomment %}
-
-<!-- FEATURE CARDS -->
-<div class="container">
-
-    <h2>Explore Features</h2>
-
-    <div class="cards">
-
-        <a href="/scan/" class="card">
-            <h3>📷 Scan Product</h3>
-            <p>Analyze food instantly</p>
-        </a>
-
-        <div class="card">
-            <h3>📊 Health Score</h3>
-            <p>Track your eating habits</p>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div><strong>HealthyMe</strong></div>
+        <div>
+            {{ request.user.first_name }} |
+            <a href="/logout/">Logout</a>
         </div>
-
-        <div class="card">
-            <h3>🧪 Ingredients</h3>
-            <p>Know what's inside</p>
-        </div>
-
-        <div class="card">
-            <h3>🎁 Rewards</h3>
-            <p>Earn points & coupons</p>
-        </div>
-
-        <div class="card">
-            <h3>👥 Community</h3>
-            <p>Share & learn together</p>
-        </div>
-
     </div>
 
-</div>
-<footer class="footer">
-
-    <div class="footer-content">
-
-        <div class="footer-section">
-            <h3>HealthyMe</h3>
-            <p>Empowering your informed health journey.</p>
+    <!-- HERO SECTION -->
+    <div class="hero">
+        <div class="hero-text">
+            <h1>Welcome, {{ request.user.first_name }} 👋</h1>
+            <p>Track your food. Improve your health. Live smarter.</p>
+            <a href="/scan/" class="hero-btn">Start Scanning</a>
         </div>
-
-        <div class="footer-section">
-            <h4>Features</h4>
-            <p>Scan Product</p>
-            <p>Health Score</p>
-            <p>Rewards</p>
-        </div>
-
-        <div class="footer-section">
-            <h4>Contact</h4>
-            <p>Email: support@healthyme.com</p>
-            <p>Phone: +91 9876543210</p>
-        </div>
-
     </div>
 
-    <div class="footer-bottom">
-        © 2026 HealthyMe | All Rights Reserved
+    <!-- WEEKLY GRAPH -->
+    <div class="graph-section">
+        <h2>Your Weekly Health Trend</h2>
+
+        <div class="graph-box">
+            <div class="bar" style="height: 60%;">Mon</div>
+            <div class="bar" style="height: 80%;">Tue</div>
+            <div class="bar" style="height: 50%;">Wed</div>
+            <div class="bar" style="height: 90%;">Thu</div>
+            <div class="bar" style="height: 70%;">Fri</div>
+            <div class="bar" style="height: 85%;">Sat</div>
+            <div class="bar" style="height: 75%;">Sun</div>
+        </div>
     </div>
 
-</footer>
+    <!-- AI SECTION -->
+    <div class="ai-section">
+        <h2>AI Health Suggestions 🤖</h2>
 
-</body>
-</html>
+        <div class="ai-box">
+            <p>⚠️ You consumed high sugar products this week.</p>
+            <p>✅ Try adding more fruits and vegetables.</p>
+            <p>💧 Drink at least 2L of water daily.</p>
+        </div>
+    </div>
+
+    <!-- FEATURE CARDS -->
+    <div class="container">
+        <h2 class="feature-title">Explore Features</h2>
+
+        <div class="cards">
+            <a href="/scan/" class="card">
+                <h3>📷 Scan Product</h3>
+                <p>Analyze food instantly</p>
+            </a>
+
+            <a href="/health-score/" class="card">
+                <h3>📊 Health Score</h3>
+                <p>
+                    {% if recent_scans %}
+                        View your previous scan scores
+                    {% else %}
+                        No scan history yet
+                    {% endif %}
+                </p>
+            </a>
+
+            <a href="/ingredients/" class="card">
+                <h3>🧪 Ingredients</h3>
+                <p>
+                    {% if harmful_items %}
+                        View harmful ingredients from your scanned products
+                    {% else %}
+                        No harmful ingredients found yet
+                    {% endif %}
+                </p>
+            </a>
+
+            <a href="/rewards/" class="card">
+                <h3>🎁 Rewards</h3>
+                <p>Earn points & coupons</p>
+            </a>
+
+            <a href="/community/" class="card">
+                <h3>👥 Community</h3>
+                <p>Share & learn together</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>HealthyMe</h3>
+                <p>Empowering your informed health journey.</p>
+            </div>

@@ -1,3 +1,5 @@
+from unittest import result
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
@@ -7,6 +9,11 @@ import re
 import requests
 import pytesseract
 from PIL import Image, ImageFilter, ImageOps
+from core.models import RewardWallet, RewardHistory
+from django.utils import timezone
+from core.models import ScanHistory
+from core.models import CommunityPost
+from django.shortcuts import redirect
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -88,7 +95,20 @@ def register_view(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    recent_scans = ScanHistory.objects.filter(user=request.user).order_by("-scanned_at")[:5]
+
+    harmful_items = []
+    for scan in recent_scans:
+        if scan.harmful_ingredients:
+            parts = [x.strip() for x in scan.harmful_ingredients.split(",") if x.strip()]
+            harmful_items.extend(parts)
+
+    harmful_items = list(dict.fromkeys(harmful_items))[:8]
+
+    return render(request, 'dashboard.html', {
+        'recent_scans': recent_scans,
+        'harmful_items': harmful_items,
+    })
 
 
 def user_logout(request):
@@ -610,6 +630,7 @@ def fetch_product_advanced(barcode=None, product_name=None):
 
 # ---------------- MAIN SCAN VIEW ----------------
 
+
 @login_required
 def scan(request):
     if request.method == "POST":
@@ -640,6 +661,24 @@ def scan(request):
                 "local db", "api"
             ] else "medium"
 
+            harmful_text = ", ".join(result.get("issues", []))
+            good_text = ", ".join(result.get("positives", []))
+
+            ScanHistory.objects.create(
+                user=request.user,
+                product_name=result.get("product_name", "Unknown Product"),
+                barcode=barcode if barcode else "",
+                score=result.get("score"),
+                status=result.get("status", ""),
+                harmful_ingredients=harmful_text,
+                good_ingredients=good_text
+            )
+
+            give_scan_reward(request.user, result)
+
+            wallet = RewardWallet.objects.get(user=request.user)
+            result["reward_points"] = wallet.points
+
             return render(request, "result.html", result)
 
         return render(request, "result.html", {
@@ -656,3 +695,96 @@ def scan(request):
         })
 
     return render(request, "scan.html")
+
+def give_scan_reward(user, result):
+    wallet, _ = RewardWallet.objects.get_or_create(user=user)
+
+    points_to_add = 5
+    action_text = "Product scanned"
+
+    wallet.total_scans += 1
+
+    if result.get("score") is not None and result["score"] >= 75:
+        points_to_add += 10
+        wallet.healthy_scans += 1
+        action_text = "Healthy product scanned"
+
+    today = timezone.now().date()
+    already_rewarded_today = RewardHistory.objects.filter(
+        user=user,
+        action="First scan of the day",
+        created_at__date=today
+    ).exists()
+
+    if not already_rewarded_today:
+        points_to_add += 5
+        RewardHistory.objects.create(
+            user=user,
+            action="First scan of the day",
+            points_added=5
+        )
+
+    wallet.points += points_to_add
+    wallet.save()
+
+    RewardHistory.objects.create(
+        user=user,
+        action=action_text,
+        points_added=points_to_add
+    )
+
+@login_required
+def rewards_page(request):
+    wallet, _ = RewardWallet.objects.get_or_create(user=request.user)
+    history = RewardHistory.objects.filter(user=request.user).order_by("-created_at")
+
+    return render(request, "rewards.html", {
+        "wallet": wallet,
+        "history": history
+    })
+
+@login_required
+def health_score_page(request):
+    recent_scans = ScanHistory.objects.filter(user=request.user).order_by("-scanned_at")
+
+    return render(request, "health_score.html", {
+        "recent_scans": recent_scans
+    })
+
+
+@login_required
+def ingredients_page(request):
+
+    recent_scans = ScanHistory.objects.filter(user=request.user).order_by("-scanned_at")
+
+    harmful_items = []
+    for scan in recent_scans:
+        if scan.harmful_ingredients:
+            parts = [x.strip() for x in scan.harmful_ingredients.split(",") if x.strip()]
+            harmful_items.extend(parts)
+
+    harmful_items = list(dict.fromkeys(harmful_items))
+
+    return render(request, "ingredients.html", {
+        "harmful_items": harmful_items,
+        "recent_scans": recent_scans
+    })
+
+
+
+@login_required
+def community(request):
+    if request.method == "POST":
+        content = request.POST.get("content")
+        if content:
+            CommunityPost.objects.create(
+                user=request.user,
+                content=content
+            )
+        return redirect("community")
+
+    posts = CommunityPost.objects.all().order_by("-created_at")
+
+    return render(request, "community.html", {
+        "posts": posts
+    })
