@@ -116,6 +116,22 @@
             color: #666;
             text-align: left;
             line-height: 1.5;
+
+            .back-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #2ecc71;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: #27ae60;
+    transform: scale(1.05);
+}
         }
     </style>
 </head>
@@ -147,7 +163,9 @@
 
         <button type="submit" class="btn analyze-btn">Analyze Product</button>
     </form>
-
+ <div style="text-align:center; margin-top:15px;">
+    <a href="/dashboard/" class="back-btn">⬅ Back to Dashboard</a>
+</div>
     <div class="note">
         Barcode is best. If barcode is not found, enter the product name manually.
     </div>

@@ -19,4 +19,5 @@ urlpatterns = [
     path("ingredients/", views.ingredients_page, name="ingredients"),
     path("rewards/", views.rewards_page, name="rewards"),
     path("community/", views.community, name="community"),
+    path('verify-registration-otp/', views.verify_registration_otp, name='verify_registration_otp'),
 ]

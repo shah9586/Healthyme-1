@@ -14,6 +14,13 @@ from django.utils import timezone
 from core.models import ScanHistory
 from core.models import CommunityPost
 from django.shortcuts import redirect
+import random
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.utils import timezone
+from core.models import LoginOTP
+import random
+from core.models import RegistrationOTP
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -64,8 +71,13 @@ def login_view(request):
 def register_view(request):
     if request.method == 'POST':
         data = request.POST
-        password1 = data.get('password1')
-        password2 = data.get('password2')
+
+        first_name = data.get('first_name', '').strip()
+        last_name = data.get('last_name', '').strip()
+        email = data.get('email', '').strip()
+        contact = data.get('contact', '').strip()
+        password1 = data.get('password1', '').strip()
+        password2 = data.get('password2', '').strip()
 
         if password1 != password2:
             return render(request, 'register.html', {
@@ -79,16 +91,41 @@ def register_view(request):
 
         UserModel = get_user_model()
 
-        UserModel.objects.create_user(
-            username=data['email'],
-            email=data['email'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            contact=data['contact'],
-            password=password1
+        if UserModel.objects.filter(email=email).exists():
+            return render(request, 'register.html', {
+                'error': '❌ Email already registered'
+            })
+
+        if UserModel.objects.filter(contact=contact).exists():
+            return render(request, 'register.html', {
+                'error': '❌ Contact number already registered'
+            })
+
+        otp = generate_otp()
+
+        # delete old pending OTPs for same email
+        RegistrationOTP.objects.filter(email=email, is_verified=False).delete()
+
+        RegistrationOTP.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            contact=contact,
+            password=password1,
+            otp=otp
         )
 
-        return redirect('/login/')
+        send_mail(
+            subject="HealthyMe Registration OTP",
+            message=f"Your HealthyMe OTP is {otp}. It is valid for 5 minutes.",
+            from_email=None,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
+        request.session["pending_registration_email"] = email
+
+        return redirect('/verify-registration-otp/')
 
     return render(request, 'register.html')
 
@@ -478,6 +515,7 @@ def fetch_from_local_db(barcode=None, product_name=None):
             return {
                 "product_name": product.name or "Unknown Product",
                 "text": text,
+                "barcode": product.barcode,
                 "lookup_source": "local db"
             }
 
@@ -494,11 +532,11 @@ def fetch_from_local_db(barcode=None, product_name=None):
             return {
                 "product_name": product.name or "Unknown Product",
                 "text": text,
+                "barcode": product.barcode,
                 "lookup_source": "local db"
             }
 
     return None
-
 
 def fetch_product_by_barcode(barcode):
     try:
@@ -598,13 +636,13 @@ def fetch_product_by_name(product_name):
         return {
             "product_name": product.get("product_name", product_name),
             "text": text,
+            "barcode": product.get("code", ""),
             "lookup_source": "api"
         }
 
     except Exception as e:
         print("NAME API ERROR:", e)
         return None
-
 
 def fetch_product_advanced(barcode=None, product_name=None):
     local_product = fetch_from_local_db(barcode=barcode, product_name=product_name)
@@ -655,7 +693,7 @@ def scan(request):
             )
 
             result["recommendation"] = recommendation
-            result["barcode"] = barcode if barcode else ""
+            result["barcode"] = barcode if barcode else product.get("barcode", "")
             result["source"] = product.get("lookup_source", "unknown")
             result["confidence"] = "high" if product.get("lookup_source") in [
                 "local db", "api"
@@ -771,6 +809,9 @@ def ingredients_page(request):
     })
 
 
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
 
 @login_required
 def community(request):
@@ -788,3 +829,136 @@ def community(request):
     return render(request, "community.html", {
         "posts": posts
     })
+
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+def login_otp_request(request):
+    if request.method == "POST":
+        username_input = request.POST.get("username", "").strip()
+
+        user = None
+
+        if "@" in username_input:
+            user = User.objects.filter(email=username_input).first()
+        else:
+            user = User.objects.filter(contact=username_input).first()
+
+        if not user:
+            return render(request, "login_otp_request.html", {
+                "error": "❌ User not found"
+            })
+
+        otp = generate_otp()
+
+        LoginOTP.objects.create(
+            user=user,
+            otp=otp
+        )
+
+        # Email OTP
+        if user.email:
+            send_mail(
+                subject="HealthyMe Login OTP",
+                message=f"Your OTP is: {otp}. It is valid for 5 minutes.",
+                from_email=None,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+        # Store user id in session for verify step
+        request.session["otp_user_id"] = user.id
+
+        return redirect("/verify-otp/")
+
+    return render(request, "login_otp_request.html")
+
+def verify_otp(request):
+    user_id = request.session.get("otp_user_id")
+
+    if not user_id:
+        return redirect("/login-otp/")
+
+    user = User.objects.filter(id=user_id).first()
+
+    if not user:
+        return redirect("/login-otp/")
+
+    if request.method == "POST":
+        entered_otp = request.POST.get("otp", "").strip()
+
+        otp_obj = LoginOTP.objects.filter(
+            user=user,
+            otp=entered_otp,
+            is_used=False
+        ).order_by("-created_at").first()
+
+        if not otp_obj:
+            return render(request, "verify_otp.html", {
+                "error": "❌ Invalid OTP"
+            })
+
+        if otp_obj.is_expired():
+            return render(request, "verify_otp.html", {
+                "error": "❌ OTP expired. Please request a new one."
+            })
+
+        otp_obj.is_used = True
+        otp_obj.save()
+
+        login(request, user)
+
+        if "otp_user_id" in request.session:
+            del request.session["otp_user_id"]
+
+        return redirect("/dashboard/")
+
+    return render(request, "verify_otp.html")
+
+def verify_registration_otp(request):
+    pending_email = request.session.get("pending_registration_email")
+
+    if not pending_email:
+        return redirect('/register/')
+
+    otp_record = RegistrationOTP.objects.filter(
+        email=pending_email,
+        is_verified=False
+    ).order_by('-created_at').first()
+
+    if not otp_record:
+        return redirect('/register/')
+
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp', '').strip()
+
+        if otp_record.is_expired():
+            return render(request, 'verify_registration_otp.html', {
+                'error': '❌ OTP expired. Please register again.'
+            })
+
+        if otp_record.otp != entered_otp:
+            return render(request, 'verify_registration_otp.html', {
+                'error': '❌ Invalid OTP'
+            })
+
+        UserModel = get_user_model()
+
+        UserModel.objects.create_user(
+            username=otp_record.email,
+            email=otp_record.email,
+            first_name=otp_record.first_name,
+            last_name=otp_record.last_name,
+            contact=otp_record.contact,
+            password=otp_record.password
+        )
+
+        otp_record.is_verified = True
+        otp_record.save()
+
+        if "pending_registration_email" in request.session:
+            del request.session["pending_registration_email"]
+
+        return redirect('/login/')
+
+    return render(request, 'verify_registration_otp.html')

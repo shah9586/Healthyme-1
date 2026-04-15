@@ -5,7 +5,13 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
+from django.db import models
+from django.utils import timezone
+from datetime import timedelta
 
 
 
@@ -102,3 +108,38 @@ class CommunityPost(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.content[:30]}"
+    
+
+
+
+
+class LoginOTP(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(minutes=5)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.otp}"
+    
+
+
+
+class RegistrationOTP(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    contact = models.CharField(max_length=20)
+    password = models.CharField(max_length=255)
+    otp = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(minutes=5)
+
+    def __str__(self):
+        return f"{self.email} - {self.otp}"

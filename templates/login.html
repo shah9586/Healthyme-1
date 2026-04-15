@@ -132,7 +132,14 @@
 {% endif %}
 
     <button type="submit">Login</button>
-
+    <div style="text-align:center; margin-top:12px;">
+    <a href="/login-otp/" style="color:#27ae60; font-weight:bold; text-decoration:none;">
+        Login with OTP
+    </a>
+</div>
+    <div style="text-align:center"; margin-top:30px;">
+    <a href="{% url 'password_reset' %}" style="color:#27ae60; text-decoration:none;">Forgot Password?</a>
+</div>
     <div class="small-text">
         Don’t have an account? <a href="/register/">Register</a>
     </div>
