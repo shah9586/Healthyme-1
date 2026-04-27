@@ -3,31 +3,75 @@
 <head>
     <title>Scan Product - HealthyMe</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #eef7f1;
+            font-family: 'Segoe UI', Arial, sans-serif;
             color: #222;
+            min-height: 100vh;
+            overflow-x: hidden;
+
+            background:
+                linear-gradient(rgba(255,255,255,0.84), rgba(255,255,255,0.84)),
+                url("https://images.unsplash.com/photo-1542838132-92c53300491e");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
+       .floating-item {
+    position: fixed;
+    font-size: 60px;   /* 🔥 increased from ~34px */
+    opacity: 0.25;     /* slightly more visible */
+    animation: floatMove 10s infinite ease-in-out;
+    z-index: 0;
+    pointer-events: none; /* avoid blocking clicks */
+}
+
+/* Position (you can tweak more if needed) */
+    .item1 { top: 10%; left: 5%; }
+    .item2 { top: 30%; right: 6%; }
+    .item3 { bottom: 15%; left: 8%; }
+    .item4 { bottom: 10%; right: 10%; }
+
+/* Better floating animation */
+@keyframes floatMove {
+    0% {
+        transform: translateY(0px) scale(1) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-40px) scale(1.1) rotate(10deg);
+    }
+    100% {
+        transform: translateY(0px) scale(1) rotate(0deg);
+    }
+}
         .container {
             width: 100%;
-            max-width: 460px;
-            margin: 40px auto;
-            background: white;
-            padding: 24px;
-            border-radius: 18px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 480px;
+            margin: 45px auto;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(9px);
+            padding: 28px;
+            border-radius: 24px;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
             text-align: center;
+            position: relative;
+            z-index: 2;
+            animation: fadeUp 0.8s ease;
         }
 
         h2 {
             margin-top: 0;
             color: #1f8f4d;
-            font-size: 34px;
+            font-size: 38px;
+            letter-spacing: 0.5px;
         }
 
         .subtext {
@@ -39,23 +83,30 @@
         #reader {
             width: 100%;
             min-height: 120px;
-            margin: 15px auto;
-            border-radius: 12px;
+            margin: 18px auto;
+            border-radius: 15px;
             overflow: hidden;
+            background: rgba(245,245,245,0.9);
         }
 
         .barcode-box {
-            background: #f5f5f5;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 16px 0;
+            background: rgba(245,245,245,0.95);
+            padding: 14px;
+            border-radius: 14px;
+            margin: 18px 0;
             word-break: break-word;
             text-align: center;
+            border: 1px solid #e7eee9;
         }
 
         .barcode-title {
             font-weight: bold;
             margin-bottom: 5px;
+            color: #1f2d3d;
+        }
+
+        #barcodeText {
+            color: #333;
         }
 
         .btn-row {
@@ -67,21 +118,26 @@
         }
 
         .btn {
-            background: #2ecc71;
+            background: linear-gradient(90deg, #1f8f4d, #2fbf71);
             border: none;
             color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
+            padding: 11px 18px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+            box-shadow: 0 5px 14px rgba(31, 143, 77, 0.25);
         }
 
         .btn:hover {
-            background: #27ae60;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(31, 143, 77, 0.35);
         }
 
         .btn.secondary {
             background: #95a5a6;
+            box-shadow: none;
         }
 
         .btn.secondary:hover {
@@ -93,49 +149,94 @@
             font-size: 18px;
             margin: 18px 0 8px;
             color: #222;
+            font-weight: 600;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #d8e3dd;
+            border-radius: 10px;
             margin-top: 8px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #1f8f4d;
+            box-shadow: 0 0 0 3px rgba(31,143,77,0.12);
         }
 
         .analyze-btn {
             width: 100%;
             margin-top: 20px;
-            padding: 12px;
+            padding: 13px;
             font-size: 16px;
         }
 
+        .back-btn {
+            display: inline-block;
+            padding: 10px 18px;
+            background: white;
+            color: #1f8f4d;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid #1f8f4d;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #1f8f4d;
+            color: white;
+            transform: translateY(-3px);
+        }
+
         .note {
-            margin-top: 15px;
+            margin-top: 16px;
             font-size: 13px;
             color: #666;
             text-align: left;
             line-height: 1.5;
+            background: rgba(247, 255, 250, 0.85);
+            padding: 12px;
+            border-radius: 12px;
+            border-left: 4px solid #2fbf71;
+        }
 
-            .back-btn {
-    display: inline-block;
-    padding: 10px 18px;
-    background: #2ecc71;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: 0.3s;
-}
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.back-btn:hover {
-    background: #27ae60;
-    transform: scale(1.05);
-}
+        @media (max-width: 600px) {
+            .container {
+                width: 92%;
+                margin: 30px auto;
+                padding: 22px;
+            }
+
+            h2 {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
+
 <body>
+
+<div class="floating-item item1">🥤</div>
+<div class="floating-item item2">🍫</div>
+<div class="floating-item item3">📦</div>
+<div class="floating-item item4">🧃</div>
 
 <div class="container">
     <h2>Scan Product</h2>
@@ -144,18 +245,18 @@
     <form method="POST" action="{% url 'scan' %}">
         {% csrf_token %}
 
-<div id="reader"></div>
+        <div id="reader"></div>
 
-<div class="barcode-box">
-    <div class="barcode-title">Detected Barcode</div>
-    <div id="barcodeText">Not scanned yet</div>
-</div>
+        <div class="barcode-box">
+            <div class="barcode-title">Detected Barcode</div>
+            <div id="barcodeText">Not scanned yet</div>
+        </div>
 
-<input type="hidden" name="barcode" id="barcodeInput">
+        <input type="hidden" name="barcode" id="barcodeInput">
 
         <div class="btn-row">
-           <button type="button" class="btn" onclick="startScanner()">Start Barcode Scan</button>
-           <button type="button" class="btn secondary" onclick="stopScanner()">Stop</button>
+            <button type="button" class="btn" onclick="startScanner()">Start Barcode Scan</button>
+            <button type="button" class="btn secondary" onclick="stopScanner()">Stop</button>
         </div>
 
         <div class="section-title">Or Enter Product Name</div>
@@ -163,11 +264,13 @@
 
         <button type="submit" class="btn analyze-btn">Analyze Product</button>
     </form>
- <div style="text-align:center; margin-top:15px;">
-    <a href="/dashboard/" class="back-btn">⬅ Back to Dashboard</a>
-</div>
+
+    <div style="text-align:center; margin-top:16px;">
+        <a href="/dashboard/" class="back-btn">⬅ Back to Dashboard</a>
+    </div>
+
     <div class="note">
-        Barcode is best. If barcode is not found, enter the product name manually.
+         If barcode is not found, enter the product name manually.
     </div>
 </div>
 
@@ -197,7 +300,7 @@
 
             html5QrCode = new Html5Qrcode("reader");
 
-            const cameraId = devices[0].id; // laptop webcam
+            const cameraId = devices[0].id;
             const config = {
                 fps: 10,
                 qrbox: { width: 280, height: 140 },

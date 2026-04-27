@@ -38,6 +38,8 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             color: white;
             animation: fadeSlide 1s ease;
+            position: relative;
+            z-index: 2;
         }
 
         h2 {
@@ -196,12 +198,37 @@ input[type="password"]::-webkit-textfield-decoration-container {
     top: 10px;
     cursor: pointer;
 }
+
+/* 🔥 Floating bubbles */
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(5px);
+    animation: float 12s infinite ease-in-out;
+    z-index: 0;
+}
+
+.b1 { width: 130px; height: 130px; top: 10%; left: 10%; }
+.b2 { width: 90px; height: 90px; top: 70%; left: 20%; }
+.b3 { width: 160px; height: 160px; top: 50%; right: 10%; }
+.b4 { width: 70px; height: 70px; bottom: 10%; right: 30%; }
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-40px); }
+    100% { transform: translateY(0); }
+}
     </style>
 
     
 </head>
 
 <body>
+    <div class="bubble b1"></div>
+<div class="bubble b2"></div>
+<div class="bubble b3"></div>
+<div class="bubble b4"></div>
 
 <form method="POST" class="box">
     {% csrf_token %}

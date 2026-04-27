@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,12 +17,34 @@
             background: linear-gradient(-45deg, #27ae60, #2ecc71, #1abc9c, #16a085);
             background-size: 400% 400%;
             animation: gradientBG 10s ease infinite;
+            overflow: hidden;
         }
 
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
+        }
+
+        /* 🔥 FLOATING BUBBLES */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(5px);
+            animation: float 12s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .b1 { width: 120px; height: 120px; top: 10%; left: 10%; }
+        .b2 { width: 80px; height: 80px; top: 70%; left: 20%; }
+        .b3 { width: 150px; height: 150px; top: 50%; right: 10%; }
+        .b4 { width: 60px; height: 60px; bottom: 10%; right: 30%; }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-40px); }
+            100% { transform: translateY(0); }
         }
 
         .box {
@@ -35,6 +56,10 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             color: white;
             animation: fadeSlide 1s ease;
+
+            /* IMPORTANT */
+            position: relative;
+            z-index: 2;
         }
 
         h2 {
@@ -55,21 +80,6 @@
             background: transparent;
             color: white;
             outline: none;
-        }
-
-        .input-group label {
-            position: absolute;
-            top: 12px;
-            left: 0;
-            color: #ddd;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-
-        .input-group input:focus + label,
-        .input-group input:valid + label {
-            top: -10px;
-            font-size: 11px;
         }
 
         button {
@@ -109,37 +119,46 @@
 
 <body>
 
+<!-- 🔥 BUBBLES -->
+<div class="bubble b1"></div>
+<div class="bubble b2"></div>
+<div class="bubble b3"></div>
+<div class="bubble b4"></div>
+
 <form method="POST" class="box">
     {% csrf_token %}
     <h2>Login</h2>
 
     <div class="input-group">
-         <span>📧</span>
+        <span>📧</span>
         <input type="text" name="username" placeholder="Email or Contact" required>
-        {% comment %} <label>Email or Contact</label> {% endcomment %}
     </div>
 
     <div class="input-group">
         <span>🔒</span>
         <input type="password" name="password" placeholder="Password" required>
-        {% comment %} <label>Password</label> {% endcomment %}
     </div>
     
-   {% if error %}
-<p style="color:#ff4d4d; font-size:13px; margin-top:5px;">
-    {{ error }}
-</p>
-{% endif %}
+    {% if error %}
+    <p style="color:#ff4d4d; font-size:13px; margin-top:5px;">
+        {{ error }}
+    </p>
+    {% endif %}
 
     <button type="submit">Login</button>
+
     <div style="text-align:center; margin-top:12px;">
-    <a href="/login-otp/" style="color:#27ae60; font-weight:bold; text-decoration:none;">
-        Login with OTP
-    </a>
-</div>
-    <div style="text-align:center"; margin-top:30px;">
-    <a href="{% url 'password_reset' %}" style="color:#27ae60; text-decoration:none;">Forgot Password?</a>
-</div>
+        <a href="/login-otp/" style="color:#27ae60; font-weight:bold; text-decoration:none;">
+            Login with OTP
+        </a>
+    </div>
+
+    <div style="text-align:center; margin-top:12px;">
+        <a href="{% url 'password_reset' %}" style="color:#27ae60; text-decoration:none;">
+            Forgot Password?
+        </a>
+    </div>
+
     <div class="small-text">
         Don’t have an account? <a href="/register/">Register</a>
     </div>

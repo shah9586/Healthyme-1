@@ -4,6 +4,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from core.models import ProductIndex
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+from datetime import timedelta
+from django.utils import timezone
+from django.db.models import Count
+from core.models import ScanHistory
+
 
 import re
 import requests
@@ -131,7 +138,44 @@ def register_view(request):
 
 
 @login_required
+
+
+
+@login_required
 def dashboard(request):
+    today = timezone.now().date()
+    start_of_week = today - timedelta(days=today.weekday())  # Monday
+    end_of_week = start_of_week + timedelta(days=6)          # Sunday
+
+    scans = (
+        ScanHistory.objects
+        .filter(user=request.user, scanned_at__date__range=[start_of_week, end_of_week])
+        .annotate(scan_day=TruncDate("scanned_at"))
+        .values("scan_day")
+        .annotate(total=Count("id"))
+    )
+
+    scan_dict = {
+        item["scan_day"]: item["total"]
+        for item in scans
+    }
+
+    weekly_scan_data = []
+    max_count = 1
+
+    for i in range(7):
+        day_date = start_of_week + timedelta(days=i)
+        count = scan_dict.get(day_date, 0)
+        max_count = max(max_count, count)
+
+        weekly_scan_data.append({
+            "day": day_date.strftime("%a"),
+            "count": count,
+        })
+
+    for item in weekly_scan_data:
+        item["height"] = 20 if item["count"] == 0 else max(25, int((item["count"] / max_count) * 100))
+
     recent_scans = ScanHistory.objects.filter(user=request.user).order_by("-scanned_at")[:5]
 
     harmful_items = []
@@ -142,11 +186,11 @@ def dashboard(request):
 
     harmful_items = list(dict.fromkeys(harmful_items))[:8]
 
-    return render(request, 'dashboard.html', {
-        'recent_scans': recent_scans,
-        'harmful_items': harmful_items,
+    return render(request, "dashboard.html", {
+        "weekly_scan_data": weekly_scan_data,
+        "recent_scans": recent_scans,
+        "harmful_items": harmful_items,
     })
-
 
 def user_logout(request):
     logout(request)
@@ -667,7 +711,20 @@ def fetch_product_advanced(barcode=None, product_name=None):
 
 
 # ---------------- MAIN SCAN VIEW ----------------
+def _calc_points(score):
+    if score is None:
+        return 0
 
+    if score >= 85:
+        return 50
+    elif score >= 70:
+        return 30
+    elif score >= 50:
+        return 15
+    elif score >= 30:
+        return 8
+    else:
+        return 3
 
 @login_required
 def scan(request):
@@ -695,27 +752,27 @@ def scan(request):
             result["recommendation"] = recommendation
             result["barcode"] = barcode if barcode else product.get("barcode", "")
             result["source"] = product.get("lookup_source", "unknown")
-            result["confidence"] = "high" if product.get("lookup_source") in [
-                "local db", "api"
-            ] else "medium"
-
-            harmful_text = ", ".join(result.get("issues", []))
-            good_text = ", ".join(result.get("positives", []))
+            result["confidence"] = "high" if product.get("lookup_source") in ["local db", "api"] else "medium"
 
             ScanHistory.objects.create(
                 user=request.user,
                 product_name=result.get("product_name", "Unknown Product"),
-                barcode=barcode if barcode else "",
+                barcode=result.get("barcode", ""),
                 score=result.get("score"),
                 status=result.get("status", ""),
-                harmful_ingredients=harmful_text,
-                good_ingredients=good_text
+                harmful_ingredients=", ".join(result.get("issues", [])),
+                good_ingredients=", ".join(result.get("positives", []))
             )
 
             give_scan_reward(request.user, result)
 
             wallet = RewardWallet.objects.get(user=request.user)
             result["reward_points"] = wallet.points
+
+            if result.get("score") is not None:
+                result["scan_points"] = _calc_points(result["score"])
+            else:
+                result["scan_points"] = 0
 
             return render(request, "result.html", result)
 
@@ -730,6 +787,8 @@ def scan(request):
             "confidence": "low",
             "source": "not found",
             "recommendation": None,
+            "reward_points": None,
+            "scan_points": 0,
         })
 
     return render(request, "scan.html")

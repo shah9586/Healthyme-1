@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Dashboard - HealthyMe</title>
+
     <style>
         * {
             box-sizing: border-box;
@@ -10,18 +11,48 @@
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background: #f4fdf7;
             min-height: 100vh;
+            overflow-x: hidden;
+
+            background:
+                linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
+                url("https://images.unsplash.com/photo-1600891964599-f61ba0e24092");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Floating packaged items */
+        .floating-item {
+            position: fixed;
+            font-size: 34px;
+            opacity: 0.15;
+            animation: floatMove 10s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .item1 { top: 12%; left: 6%; }
+        .item2 { top: 25%; right: 8%; }
+        .item3 { bottom: 20%; left: 10%; }
+        .item4 { bottom: 12%; right: 12%; }
+
+        @keyframes floatMove {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-25px); }
+            100% { transform: translateY(0); }
         }
 
         /* NAVBAR */
         .navbar {
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            background: linear-gradient(90deg, #1f8f4d, #2fbf71);
             padding: 15px 40px;
             color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 2;
+            position: relative;
         }
 
         .navbar a {
@@ -31,75 +62,50 @@
             margin-left: 10px;
         }
 
-        .navbar a:hover {
-            text-decoration: underline;
-        }
+        /* HERO */
+       .hero {
+       height: 300px;
+         background:
+        linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
+       url("https://images.unsplash.com/photo-1512621776951-a57141f2eefd");
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        padding: 40px;
+        color: white;
+        position: relative;
+}
 
-        /* HERO SECTION */
-        .hero {
-            height: 300px;
-            background: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352') no-repeat center/cover;
-            display: flex;
-            align-items: center;
-            padding: 40px;
-            color: white;
-            position: relative;
-        }
-
-        .hero::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-        }
+        
 
         .hero-text {
             position: relative;
-            max-width: 500px;
             z-index: 1;
             animation: fadeUp 0.8s ease;
         }
 
-        .hero h1 {
-            margin: 0;
-            font-size: 32px;
-        }
-
-        .hero p {
-            margin: 10px 0 20px;
-        }
-
         .hero-btn {
-            display: inline-block;
             padding: 12px 25px;
-            background: #27ae60;
+            background: #15723c;
             color: white;
-            text-decoration: none;
             border-radius: 25px;
+            text-decoration: none;
             transition: 0.3s;
-            font-weight: 600;
         }
 
         .hero-btn:hover {
-            background: #219150;
+            background: #16663a;
             transform: scale(1.05);
         }
 
-        /* CONTAINER */
+        /* CARDS */
         .container {
             padding: 40px;
+            position: relative;
+            z-index: 2;
         }
 
-        /* FEATURE TITLE */
-        .feature-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #111;
-            margin-bottom: 20px;
-            animation: fadeUp 0.8s ease;
-        }
-
-        /* FEATURE CARDS */
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -107,48 +113,29 @@
         }
 
         .card {
-            display: block;
-            background: white;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
             padding: 25px;
             border-radius: 18px;
             text-decoration: none;
             color: black;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             transition: 0.4s;
-            animation: fadeUp 0.8s ease;
         }
 
         .card:hover {
-            transform: translateY(-10px) scale(1.03);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(-10px);
         }
 
         .card h3 {
-            margin: 0 0 10px 0;
-            color: #27ae60;
-            font-size: 28px;
-            text-decoration: none;
+            color: #1f8f4d;
         }
 
-        .card p {
-            font-size: 13px;
-            color: #666;
-            margin: 0;
-            text-decoration: none;
-            line-height: 1.5;
-        }
-
-        .card * {
-            text-decoration: none !important;
-        }
-
-        /* GRAPH SECTION */
+        /* GRAPH */
         .graph-section {
             padding: 40px;
-        }
-
-        .graph-section h2 {
-            animation: fadeUp 0.8s ease;
+            z-index: 2;
+            position: relative;
         }
 
         .graph-box {
@@ -156,137 +143,79 @@
             align-items: flex-end;
             gap: 15px;
             height: 200px;
-            background: white;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            animation: fadeUp 0.8s ease;
         }
 
-        .bar {
-            flex: 1;
-            background: linear-gradient(#27ae60, #2ecc71);
-            border-radius: 10px;
-            text-align: center;
-            color: white;
-            font-size: 12px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 5px;
-            transition: 0.3s;
-        }
+       .bar {
+    flex: 1;
+    background: linear-gradient(#1f8f4d, #2fbf71);
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 8px;
+    transition: 0.3s;
+    min-height: 35px;
+}
 
-        .bar:hover {
-            transform: scale(1.08);
-        }
+.bar span {
+    font-weight: bold;
+    font-size: 16px;
+}
 
-        /* AI SECTION */
+.bar small {
+    font-size: 12px;
+}
+
+.bar:hover {
+    transform: scale(1.08);
+}
+
+.bar:hover {
+    transform: scale(1.1);
+}
+        /* AI BOX */
         .ai-section {
-            padding: 0 40px 20px;
-            animation: fadeUp 0.8s ease;
+            padding: 0 40px;
         }
 
         .ai-box {
-            background: white;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            line-height: 1.9;
-        }
-
-        .ai-box p {
-            margin: 0 0 8px 0;
         }
 
         /* FOOTER */
         .footer {
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            background: linear-gradient(90deg, #1f8f4d, #2fbf71);
             color: white;
             margin-top: 40px;
-            padding-top: 30px;
-            animation: fadeUp 1s ease;
+            padding: 30px;
         }
 
-        .footer-content {
-            display: flex;
-            justify-content: space-around;
-            padding: 20px 40px;
-            flex-wrap: wrap;
-        }
-
-        .footer-section {
-            max-width: 250px;
-        }
-
-        .footer-section h3,
-        .footer-section h4 {
-            margin-bottom: 10px;
-        }
-
-        .footer-section p {
-            font-size: 13px;
-            margin: 5px 0;
-            opacity: 0.9;
-            transition: 0.3s;
-        }
-
-        .footer-section p:hover {
-            opacity: 1;
-            transform: translateX(5px);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding: 15px;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        /* ANIMATION */
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(25px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* MOBILE */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-
-            .hero {
-                height: auto;
-                padding: 30px 20px;
-            }
-
-            .container,
-            .graph-section,
-            .ai-section {
-                padding: 20px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-        }
     </style>
 </head>
+
 <body>
+
+    <!-- Floating icons -->
+    <div class="floating-item item1">🥤</div>
+    <div class="floating-item item2">🍫</div>
+    <div class="floating-item item3">🍪</div>
+    <div class="floating-item item4">📦</div>
 
     <!-- NAVBAR -->
     <div class="navbar">
@@ -297,7 +226,7 @@
         </div>
     </div>
 
-    <!-- HERO SECTION -->
+    <!-- HERO -->
     <div class="hero">
         <div class="hero-text">
             <h1>Welcome, {{ request.user.first_name }} 👋</h1>
@@ -306,35 +235,25 @@
         </div>
     </div>
 
-    <!-- WEEKLY GRAPH -->
-    <div class="graph-section">
-        <h2>Your Weekly Health Trend</h2>
+    <!-- GRAPH -->
+   <div class="graph-section">
+    <h2>Your Weekly Scan Activity</h2>
 
-        <div class="graph-box">
-            <div class="bar" style="height: 60%;">Mon</div>
-            <div class="bar" style="height: 80%;">Tue</div>
-            <div class="bar" style="height: 50%;">Wed</div>
-            <div class="bar" style="height: 90%;">Thu</div>
-            <div class="bar" style="height: 70%;">Fri</div>
-            <div class="bar" style="height: 85%;">Sat</div>
-            <div class="bar" style="height: 75%;">Sun</div>
-        </div>
+    <div class="graph-box">
+        {% for item in weekly_scan_data %}
+            <div class="bar" style="height: {{ item.height }}%;">
+                <span>{{ item.count }}</span>
+                <small>{{ item.day }}</small>
+            </div>
+        {% endfor %}
     </div>
+</div>
+    
+    
 
-    <!-- AI SECTION -->
-    <div class="ai-section">
-        <h2>AI Health Suggestions 🤖</h2>
-
-        <div class="ai-box">
-            <p>⚠️ You consumed high sugar products this week.</p>
-            <p>✅ Try adding more fruits and vegetables.</p>
-            <p>💧 Drink at least 2L of water daily.</p>
-        </div>
-    </div>
-
-    <!-- FEATURE CARDS -->
+    <!-- FEATURES -->
     <div class="container">
-        <h2 class="feature-title">Explore Features</h2>
+        <h2>Explore Features</h2>
 
         <div class="cards">
             <a href="/scan/" class="card">
@@ -344,24 +263,12 @@
 
             <a href="/health-score/" class="card">
                 <h3>📊 Health Score</h3>
-                <p>
-                    {% if recent_scans %}
-                        View your previous scan scores
-                    {% else %}
-                        No scan history yet
-                    {% endif %}
-                </p>
+                <p>View previous scan scores</p>
             </a>
 
             <a href="/ingredients/" class="card">
                 <h3>🧪 Ingredients</h3>
-                <p>
-                    {% if harmful_items %}
-                        View harmful ingredients from your scanned products
-                    {% else %}
-                        No harmful ingredients found yet
-                    {% endif %}
-                </p>
+                <p>Check harmful ingredients</p>
             </a>
 
             <a href="/rewards/" class="card">
@@ -377,9 +284,9 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>HealthyMe</h3>
-                <p>Empowering your informed health journey.</p>
-            </div>
+    <div class="footer">
+        <p style="text-align:center;">HealthyMe © 2026</p>
+    </div>
+
+</body>
+</html>

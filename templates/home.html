@@ -2,20 +2,67 @@
 <html>
 <head>
     <title>HealthyMe</title>
+
     <style>
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
-            background-color: #f4fdf7;
+
+            /* 🔥 Beautiful gradient (no image) */
+            background: linear-gradient(135deg, #e8fdf5, #f4fff9);
+
             color: #2c3e50;
+            overflow-x: hidden;
         }
 
+        /* Floating soft shapes */
+        .shape {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: 0;
+            animation: float 12s infinite ease-in-out;
+        }
+
+        .s1 {
+            width: 200px;
+            height: 200px;
+            background: #2ecc71;
+            top: 10%;
+            left: 5%;
+        }
+
+        .s2 {
+            width: 150px;
+            height: 150px;
+            background: #27ae60;
+            bottom: 10%;
+            right: 10%;
+        }
+
+        .s3 {
+            width: 120px;
+            height: 120px;
+            background: #1f8f4d;
+            top: 60%;
+            left: 60%;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Navbar */
         .navbar {
-            background-color: #225b39;
+            background: linear-gradient(90deg, #1f8f4d, #2ecc71);
             padding: 15px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
 
         .navbar h2 {
@@ -24,133 +71,131 @@
         }
 
         .nav-links a {
-        color: white;
-        margin-left: 20px;
-        text-decoration: none;
-        font-weight: bold;
-        position: relative;
-        transition: color 0.3s ease;
-    }
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            position: relative;
+        }
 
-    /* 🔥 Hover effect */
-    .nav-links a:hover {
-        color: #aef5c8; /* light green */
-    }
+        .nav-links a:hover {
+            color: #d4ffe8;
+        }
 
-    /* ✨ Smooth underline animation */
-    .nav-links a::after {
-        content: "";
-        position: absolute;
-        width: 0%;
-        height: 2px;
-        background: #aef5c8;
-        left: 0;
-        bottom: -5px;
-        transition: width 0.3s ease;
-    }
+        .nav-links a::after {
+            content: "";
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background: #d4ffe8;
+            left: 0;
+            bottom: -5px;
+            transition: 0.3s;
+        }
 
-.nav-links a:hover::after {
-    width: 100%;
-}
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* HERO */
         .hero {
             text-align: center;
-            padding: 80px 20px;
+            padding: 100px 20px;
+            position: relative;
+            z-index: 2;
         }
 
         .hero h1 {
-            font-size: 40px;
-            color: #1d9750;
+            font-size: 48px;
+            color: #1f8f4d;
+            margin-bottom: 20px;
         }
 
         .hero p {
             font-size: 18px;
             max-width: 700px;
-            margin: 40px auto;
+            margin: auto;
+            line-height: 1.6;
         }
 
-            .btn {
-        padding: 14px 30px;
-        margin: 10px;
-        background: linear-gradient(45deg, #27ae60, #1d9750);
-        color: white;
-        border: none;
-        border-radius: 30px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
+        /* BUTTON */
+        .btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 14px 35px;
+            background: linear-gradient(45deg, #1f8f4d, #2ecc71);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
 
-    /* 🔥 Hover Animation */
-    .btn:hover {
-        transform: translateY(-5px) scale(1.08);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        letter-spacing: 1px;
-    }
+        .btn:hover {
+            transform: translateY(-5px) scale(1.08);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
 
-    /* ✨ Shine Effect */
-    .btn::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-        transition: 0.5s;
-    }
-
-    .btn:hover::after {
-        left: 100%;
-    }
+        /* FEATURES */
         .features {
             display: flex;
             justify-content: space-around;
-            padding: 50px 20px;
+            padding: 60px 40px;
+            flex-wrap: wrap;
+            gap: 50px;
         }
 
         .feature-box {
-        width: 25%;
-        background: white;
-        padding: 25px;
-        border-radius: 15px;
-        text-align: center;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            width: 28%;
+            min-width: 250px;
 
-        transition: all 0.4s ease;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
 
-        /* Entrance animation */
-        opacity: 0;
-        transform: translateY(50px);
-        animation: fadeUp 1s forwards;
-    }
+            padding: 25px;
+            border-radius: 18px;
+            text-align: center;
 
-    /* 🔥 Delay for each card */
-    .feature-box:nth-child(1) { animation-delay: 0.3s; }
-    .feature-box:nth-child(2) { animation-delay: 0.6s; }
-    .feature-box:nth-child(3) { animation-delay: 0.9s; }
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: 0.4s;
 
-    @keyframes fadeUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
+            animation: fadeUp 1s forwards;
         }
-    }
 
-    /* 🔥 Hover effect */
-    .feature-box:hover {
-        transform: translateY(-12px) scale(1.05);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    }
+        .feature-box:hover {
+            transform: translateY(-12px) scale(1.05);
+        }
 
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ABOUT */
         .about {
-            padding: 50px;
+            padding: 60px 20px;
             text-align: center;
         }
 
+        .about h2 {
+            color: #1f8f4d;
+        }
+
+        .about p {
+            max-width: 800px;
+            margin: auto;
+            line-height: 1.6;
+        }
+
+        /* FOOTER */
         footer {
-            background-color: #225b39;
+            background: #1f8f4d;
             color: white;
             text-align: center;
             padding: 15px;
@@ -160,31 +205,33 @@
 
 <body>
 
+    <!-- Floating shapes -->
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+
     <!-- Navbar -->
     <div class="navbar">
         <h2>HealthyMe</h2>
         <div class="nav-links">
-            {% comment %} <a href="#">Home</a> {% endcomment %}
             <a href="/login/">Login</a>
             <a href="/register/">Register</a>
             <a href="/admin/">Admin</a>
         </div>
     </div>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <div class="hero">
-        <h1>Empowering Your Informed Health Journey</h1>
+        <h1>Empowering Your Health Journey</h1>
         <p>
-            HealthyMe helps you understand what goes into your food. 
-            Get detailed ingredient insights, nutritional analysis, 
-            and make healthier choices every day.
+            Discover what goes into your food. Analyze ingredients, 
+            get health scores, and make smarter choices every day.
         </p>
 
         <a href="/start/" class="btn">Get Started</a>
-        {% comment %} <a href="/login/" class="btn">Login</a> {% endcomment %}
     </div>
 
-    <!-- Features Section -->
+    <!-- Features -->
     <div class="features">
         <div class="feature-box">
             <h3>Ingredient Insights</h3>
@@ -193,29 +240,22 @@
 
         <div class="feature-box">
             <h3>Health Score</h3>
-            <p>Get a smart health percentage score for every product.</p>
+            <p>Get a smart health percentage score instantly.</p>
         </div>
 
         <div class="feature-box">
             <h3>Smart Recommendations</h3>
-            <p>Discover healthier alternatives instantly.</p>
+            <p>Discover healthier alternatives quickly.</p>
         </div>
     </div>
 
-    <!-- About Section -->
+    <!-- About -->
     <div class="about">
         <h2>About HealthyMe</h2>
         <p>
-            HealthyMe is a smart platform designed to educate users about food products 
-            and promote healthier lifestyles. By combining technology with nutrition knowledge, 
-            we empower users to make informed decisions about what they consume.
-       
-
-
+            HealthyMe empowers users with knowledge about food products,
+            helping them make informed and healthier lifestyle choices.
         </p>
-
-
-
     </div>
 
     <!-- Footer -->
