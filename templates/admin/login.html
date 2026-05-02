@@ -1,0 +1,24 @@
+{% extends "admin/login.html" %}
+
+{% block content %}
+
+{{ block.super }}
+
+<div style="text-align:center; margin-top:40px;">
+    <a href="/" style="
+        display:inline-block;
+        padding:10px 20px;
+        background:#27ae60;
+        color:white;
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:500;
+        transition:0.3s;
+    "
+    onmouseover="this.style.background='#6e75fb'"
+    onmouseout="this.style.background='#25bef6'">
+         Back to Dashboard 
+    </a>
+</div>
+
+{% endblock %}
