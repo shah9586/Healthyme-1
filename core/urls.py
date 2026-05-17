@@ -20,4 +20,6 @@ urlpatterns = [
     path("rewards/", views.rewards_page, name="rewards"),
     path("community/", views.community, name="community"),
     path('verify-registration-otp/', views.verify_registration_otp, name='verify_registration_otp'),
+   # path("barcode-upload/", views.barcode_upload, name="barcode_upload"),
+
 ]

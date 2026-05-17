@@ -242,28 +242,60 @@
     <h2>Scan Product</h2>
     <p class="subtext">Scan barcode or enter product name.</p>
 
-    <form method="POST" action="{% url 'scan' %}">
-        {% csrf_token %}
+  <form method="POST" action="{% url 'scan' %}" enctype="multipart/form-data">
+    {% csrf_token %}
 
-        <div id="reader"></div>
+    <div id="reader"></div>
 
-        <div class="barcode-box">
-            <div class="barcode-title">Detected Barcode</div>
-            <div id="barcodeText">Not scanned yet</div>
-        </div>
+    <div class="barcode-box">
+        <div class="barcode-title">Detected Barcode</div>
+        <div id="barcodeText">Not scanned yet</div>
+    </div>
 
-        <input type="hidden" name="barcode" id="barcodeInput">
+    <input type="hidden" name="barcode" id="barcodeInput">
 
-        <div class="btn-row">
-            <button type="button" class="btn" onclick="startScanner()">Start Barcode Scan</button>
-            <button type="button" class="btn secondary" onclick="stopScanner()">Stop</button>
-        </div>
+    <div class="btn-row">
+        <button type="button" class="btn" onclick="startScanner()">
+            Start Barcode Scan
+        </button>
 
-        <div class="section-title">Or Enter Product Name</div>
-        <input type="text" name="product_name" id="productName" placeholder="Example: Hide & Seek">
+        <button type="button" class="btn secondary" onclick="stopScanner()">
+            Stop
+        </button>
+    </div>
 
-        <button type="submit" class="btn analyze-btn">Analyze Product</button>
-    </form>
+
+    <!-- NEW: Barcode Image Upload -->
+    <div class="section-title">Or Upload Barcode Photo</div>
+
+    <input
+        type="file"
+        name="barcode_image"
+        accept="image/*"
+        style="
+            width:100%;
+            padding:12px;
+            border:1px solid #d8e3dd;
+            border-radius:10px;
+            background:white;
+        "
+    >
+
+
+    <!-- Existing functionality unchanged -->
+    <div class="section-title">Or Enter Product Name</div>
+
+    <input
+        type="text"
+        name="product_name"
+        id="productName"
+        placeholder="Example: Hide & Seek"
+    >
+
+    <button type="submit" class="btn analyze-btn">
+        Analyze Product
+    </button>
+</form>
 
     <div style="text-align:center; margin-top:16px;">
         <a href="/dashboard/" class="back-btn">⬅ Back to Dashboard</a>

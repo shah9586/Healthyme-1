@@ -10,6 +10,13 @@ from datetime import timedelta
 from django.utils import timezone
 from django.db.models import Count
 from core.models import ScanHistory
+from django.shortcuts import render
+from PIL import Image
+#from pyzbar.pyzbar import decode
+from PIL import Image
+
+#from .health_logic import analyze_ingredients   # your existing function
+
 
 
 import re
@@ -21,13 +28,15 @@ from django.utils import timezone
 from core.models import ScanHistory
 from core.models import CommunityPost
 from django.shortcuts import redirect
-import random
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.utils import timezone
 from core.models import LoginOTP
 import random
 from core.models import RegistrationOTP
+import cv2
+import numpy as np
+
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -727,9 +736,21 @@ def _calc_points(score):
         return 3
 
 @login_required
+@login_required
 def scan(request):
     if request.method == "POST":
-        barcode = request.POST.get("barcode", "").strip()
+
+        barcode = ""
+        barcode_image = request.FILES.get("barcode_image")
+
+        # If user uploads barcode image
+        if barcode_image:
+            barcode = read_barcode(barcode_image)
+
+        # If barcode image not uploaded or not detected, use manual barcode input
+        if not barcode:
+            barcode = request.POST.get("barcode", "").strip()
+
         product_name_input = request.POST.get("product_name", "").strip()
 
         product = fetch_product_advanced(
@@ -1021,3 +1042,32 @@ def verify_registration_otp(request):
         return redirect('/login/')
 
     return render(request, 'verify_registration_otp.html')
+
+
+
+
+def read_barcode(image_file):
+    try:
+        img = Image.open(image_file).convert("RGB")
+        img = np.array(img)
+
+        detector = cv2.barcode.BarcodeDetector()
+
+        result = detector.detectAndDecode(img)
+
+        # Some OpenCV versions return 3 values, some return 4 values
+        if len(result) == 3:
+            decoded_info, decoded_type, points = result
+        else:
+            ok, decoded_info, decoded_type, points = result
+
+        if decoded_info:
+            if isinstance(decoded_info, (list, tuple)):
+                return decoded_info[0] if decoded_info[0] else None
+            return decoded_info
+
+        return None
+
+    except Exception as e:
+        print("BARCODE IMAGE ERROR:", e)
+        return None
