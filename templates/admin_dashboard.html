@@ -186,69 +186,53 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @media(max-width:768px){
-            .topbar {
-                flex-direction: column;
-                gap: 10px;
-            }
-            @media (max-width: 768px) {
-    body {
-        overflow-x: hidden;
+      @media(max-width:768px){
+    .topbar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+        text-align: center;
     }
 
-    .container,
-    .card,
-    .form-box,
-    .dashboard-container,
-    .main-container {
-        width: 92% !important;
-        max-width: 92% !important;
+    .topbar h2 {
+        font-size: 20px;
+    }
+
+    .container {
+        width: 95% !important;
         margin: 20px auto !important;
-        padding: 20px !important;
+        padding: 0 !important;
     }
 
-    h1 {
-        font-size: 28px !important;
+    .summary-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
     }
 
-    h2 {
-        font-size: 24px !important;
-    }
-
-    input,
-    button,
-    textarea,
-    select {
+    .summary-card,
+    .card {
         width: 100% !important;
-        font-size: 15px !important;
-    }
-
-    .btn,
-    .button {
-        width: 100% !important;
-        margin-top: 10px !important;
+        padding: 18px !important;
     }
 
     table {
-        display: block;
-        width: 100% !important;
+        min-width: 600px;
+    }
+
+    .table-wrapper {
+        width: 100%;
         overflow-x: auto;
-        white-space: nowrap;
     }
 
-    img {
-        max-width: 100% !important;
-        height: auto !important;
+    .action-btn {
+        width: auto !important;
+        margin-bottom: 6px;
     }
 
-    .navbar,
-    .nav,
-    .menu {
-        flex-direction: column !important;
-        gap: 10px !important;
+    .floating-item {
+        display: none;
     }
 }
-        }
     </style>
 </head>
 
