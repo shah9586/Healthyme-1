@@ -65,23 +65,35 @@
             font-weight: bold;
         }
 
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            background: #095f2d;
-            color: white;
-            text-decoration: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
+       .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-        .btn:hover {
-            background: #27ae60;
-            transform: scale(1.05);
-        }
+    min-width: 260px;
+    width: auto;
 
+    padding: 14px 28px;
+
+    background: #0f6b2d;
+    color: white;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+
+    border: none;
+    cursor: pointer;
+
+    transition: 0.3s ease;
+}
+
+.btn:hover {
+    background: #14853a;
+    transform: translateY(-2px);
+}
         .center {
             text-align: center;
         }
@@ -152,7 +164,7 @@
 .card,
 .score-box{
     width: 92%;
-    max-width: 700px;
+    max-width: 600px;
     margin: 30px auto;
 }
     h1 {
@@ -195,6 +207,17 @@
         flex-direction: column !important;
         gap: 10px !important;
     }
+@media screen and (max-width:768px){
+
+    .btn{
+        width:auto !important;
+        min-width:220px !important;
+        max-width:280px !important;
+
+        font-size:16px !important;
+        padding:12px 20px !important;
+    }
+
 }
     </style>
 </head>
