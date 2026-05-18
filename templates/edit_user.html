@@ -12,18 +12,20 @@
         * {
             box-sizing: border-box;
         }
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            background: linear-gradient(-45deg, #2ecc71, #27ae60, #16a085, #1abc9c);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
+    background: linear-gradient(-45deg, #2ecc71, #27ae60, #16a085, #1abc9c);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+    background-attachment: scroll;
         }
 
         @keyframes gradientBG {
@@ -32,16 +34,17 @@
             100% { background-position: 0% 50%; }
         }
 
-        .card {
-            backdrop-filter: blur(15px);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px;
-            width: 400px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            color: white;
-            animation: fadeSlide 0.8s ease;
-        }
+       .card {
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    color: white;
+    animation: fadeSlide 0.8s ease;
+}
 
         h2 {
             text-align: center;
@@ -114,61 +117,21 @@
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
-@media (max-width: 768px) {
-    body {
-        overflow-x: hidden;
-    }
-
-    .container,
-    .card,
-    .form-box,
-    .dashboard-container,
-    .main-container {
+@media screen and (max-width:768px){
+    .card {
         width: 92% !important;
-        max-width: 92% !important;
-        margin: 20px auto !important;
-        padding: 20px !important;
-    }
-
-    h1 {
-        font-size: 28px !important;
+        max-width: 350px !important;
+        padding: 22px !important;
     }
 
     h2 {
-        font-size: 24px !important;
+        font-size: 22px !important;
     }
 
     input,
-    button,
-    textarea,
-    select {
+    button {
         width: 100% !important;
-        font-size: 15px !important;
-    }
-
-    .btn,
-    .button {
-        width: 100% !important;
-        margin-top: 10px !important;
-    }
-
-    table {
-        display: block;
-        width: 100% !important;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    img {
-        max-width: 100% !important;
-        height: auto !important;
-    }
-
-    .navbar,
-    .nav,
-    .menu {
-        flex-direction: column !important;
-        gap: 10px !important;
+        font-size: 16px !important;
     }
 }
     </style>

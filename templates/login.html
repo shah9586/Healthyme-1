@@ -9,19 +9,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+       body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
 
-            background: linear-gradient(-45deg, #27ae60, #2ecc71, #1abc9c, #16a085);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            overflow: hidden;
-        }
+    min-height: 100vh;
+    overflow-x: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    background: linear-gradient(-45deg, #27ae60, #2ecc71, #1abc9c, #16a085);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+}
 
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -51,20 +55,25 @@
         }
 
         .box {
-            backdrop-filter: blur(15px);
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 40px;
-            width: 340px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            color: white;
-            animation: fadeSlide 1s ease;
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.1);
 
-            /* IMPORTANT */
-            position: relative;
-            z-index: 2;
-        }
+    border-radius: 20px;
 
+    width: 92%;
+    max-width: 340px;
+
+    padding: 40px;
+
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+
+    color: white;
+
+    animation: fadeSlide 1s ease;
+
+    position: relative;
+    z-index: 2;
+}
         h2 {
             text-align: center;
             margin-bottom: 25px;
@@ -117,61 +126,26 @@
             from {opacity: 0; transform: translateY(40px);}
             to {opacity: 1; transform: translateY(0);}
         }
-        @media (max-width: 768px) {
-    body {
-        overflow-x: hidden;
+      @media screen and (max-width:768px){
+
+    .box{
+        width:92% !important;
+        max-width:330px !important;
+        padding:22px !important;
     }
 
-    .container,
-    .card,
-    .form-box,
-    .dashboard-container,
-    .main-container {
-        width: 92% !important;
-        max-width: 92% !important;
-        margin: 20px auto !important;
-        padding: 20px !important;
-    }
-
-    h1 {
-        font-size: 28px !important;
-    }
-
-    h2 {
-        font-size: 24px !important;
+    h2{
+        font-size:22px !important;
     }
 
     input,
-    button,
-    textarea,
-    select {
-        width: 100% !important;
-        font-size: 15px !important;
+    button{
+        width:100% !important;
+        font-size:16px !important;
     }
 
-    .btn,
-    .button {
-        width: 100% !important;
-        margin-top: 10px !important;
-    }
-
-    table {
-        display: block;
-        width: 100% !important;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    img {
-        max-width: 100% !important;
-        height: auto !important;
-    }
-
-    .navbar,
-    .nav,
-    .menu {
-        flex-direction: column !important;
-        gap: 10px !important;
+    .bubble{
+        display:none !important;
     }
 }
     </style>

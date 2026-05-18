@@ -23,8 +23,8 @@
 
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
-        }
+            background-attachment: scroll;     
+           }
 
         /* Floating packaged items */
         .floating-item {
@@ -208,61 +208,81 @@
             from { opacity: 0; transform: translateY(25px); }
             to { opacity: 1; transform: translateY(0); }
         }
-@media (max-width: 768px) {
-    body {
-        overflow-x: hidden;
+@media screen and (max-width:768px){
+
+    body{
+        background-attachment: scroll !important;
+        overflow-x:hidden !important;
+    }
+
+    .navbar{
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 14px !important;
+        text-align: center !important;
+    }
+
+    .hero{
+        height: auto !important;
+        min-height: 240px !important;
+        padding: 25px 18px !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    .hero-text h1{
+        font-size: 26px !important;
+    }
+
+    .hero-text p{
+        font-size: 14px !important;
+    }
+
+    .hero-btn{
+        display: inline-block !important;
+        width: 100% !important;
+        max-width: 260px !important;
+        text-align: center !important;
     }
 
     .container,
-    .card,
-    .form-box,
-    .dashboard-container,
-    .main-container {
+    .graph-section,
+    .ai-section{
         width: 92% !important;
-        max-width: 92% !important;
+        max-width: 380px !important;
         margin: 20px auto !important;
-        padding: 20px !important;
+        padding: 0 !important;
     }
 
-    h1 {
-        font-size: 28px !important;
+    .cards{
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
     }
 
-    h2 {
-        font-size: 24px !important;
-    }
-
-    input,
-    button,
-    textarea,
-    select {
+    .card{
         width: 100% !important;
-        font-size: 15px !important;
+        padding: 18px !important;
     }
 
-    .btn,
-    .button {
-        width: 100% !important;
-        margin-top: 10px !important;
+    .graph-box{
+        height: 180px !important;
+        gap: 8px !important;
+        padding: 14px !important;
+        overflow-x: auto !important;
     }
 
-    table {
-        display: block;
-        width: 100% !important;
-        overflow-x: auto;
-        white-space: nowrap;
+    .bar{
+        min-width: 35px !important;
+        font-size: 11px !important;
     }
 
-    img {
-        max-width: 100% !important;
-        height: auto !important;
+    .floating-item{
+        display: none !important;
     }
 
-    .navbar,
-    .nav,
-    .menu {
-        flex-direction: column !important;
-        gap: 10px !important;
+    .footer{
+        padding: 18px !important;
+        text-align: center !important;
     }
 }
     </style>

@@ -15,7 +15,9 @@
             url("https://images.unsplash.com/photo-1498837167922-ddd27525d352");            
             background-size: cover;
             background-position: center;
-            min-height: 100vh;
+           min-height: 100vh;
+           overflow-x: hidden;
+            padding: 20px;
         }
 
         .container {
@@ -106,22 +108,53 @@
             from { opacity: 0; transform: translateY(20px);}
             to { opacity: 1; transform: translateY(0);}
         }
-        @media (max-width: 768px) {
-    body {
-        overflow-x: hidden;
+       @media screen and (max-width:768px){
+
+    body{
+        overflow-x:hidden !important;
+        background-attachment: scroll !important;
     }
 
     .container,
     .card,
-    .form-box,
-    .dashboard-container,
-    .main-container {
-        width: 92% !important;
-        max-width: 92% !important;
-        margin: 20px auto !important;
-        padding: 20px !important;
+    .score-box{
+        width:92% !important;
+        max-width:360px !important;
+        padding:18px !important;
+        margin:20px auto !important;
     }
 
+    h1{
+        font-size:24px !important;
+    }
+
+    h2{
+        font-size:20px !important;
+    }
+
+    table{
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+    }
+
+    .floating-item{
+        display:none !important;
+    }
+
+    button,
+    input{
+        width:100% !important;
+        font-size:16px !important;
+    }
+}
+    .container,
+.card,
+.score-box{
+    width: 92%;
+    max-width: 700px;
+    margin: 30px auto;
+}
     h1 {
         font-size: 28px !important;
     }

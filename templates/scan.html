@@ -24,7 +24,416 @@
 
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
+            <!DOCTYPE html>
+<html>
+<head>
+    <title>Scan Product - HealthyMe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/mobile-fix.css' %}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #222;
+            min-height: 100vh;
+            overflow-x: hidden;
+
+            background:
+                linear-gradient(rgba(255,255,255,0.84), rgba(255,255,255,0.84)),
+                url("https://images.unsplash.com/photo-1542838132-92c53300491e");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: scroll;        }
+
+       .floating-item {
+    position: fixed;
+    font-size: 60px;   /* 🔥 increased from ~34px */
+    opacity: 0.25;     /* slightly more visible */
+    animation: floatMove 10s infinite ease-in-out;
+    z-index: 0;
+    pointer-events: none; /* avoid blocking clicks */
+}
+
+/* Position (you can tweak more if needed) */
+    .item1 { top: 10%; left: 5%; }
+    .item2 { top: 30%; right: 6%; }
+    .item3 { bottom: 15%; left: 8%; }
+    .item4 { bottom: 10%; right: 10%; }
+
+/* Better floating animation */
+@keyframes floatMove {
+    0% {
+        transform: translateY(0px) scale(1) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-40px) scale(1.1) rotate(10deg);
+    }
+    100% {
+        transform: translateY(0px) scale(1) rotate(0deg);
+    }
+}
+       .container {
+    width: 92%;
+    max-width: 480px;
+    margin: 45px auto;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(9px);
+    padding: 28px;
+    border-radius: 24px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 0.8s ease;
+}
+
+        h2 {
+            margin-top: 0;
+            color: #1f8f4d;
+            font-size: 38px;
+            letter-spacing: 0.5px;
+        }
+
+        .subtext {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        #reader {
+            width: 100%;
+            min-height: 120px;
+            margin: 18px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(245,245,245,0.9);
+        }
+
+        .barcode-box {
+            background: rgba(245,245,245,0.95);
+            padding: 14px;
+            border-radius: 14px;
+            margin: 18px 0;
+            word-break: break-word;
+            text-align: center;
+            border: 1px solid #e7eee9;
+        }
+
+        .barcode-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1f2d3d;
+        }
+
+        #barcodeText {
+            color: #333;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(90deg, #1f8f4d, #2fbf71);
+            border: none;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+            box-shadow: 0 5px 14px rgba(31, 143, 77, 0.25);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(31, 143, 77, 0.35);
+        }
+
+        .btn.secondary {
+            background: #95a5a6;
+            box-shadow: none;
+        }
+
+        .btn.secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .section-title {
+            text-align: left;
+            font-size: 18px;
+            margin: 18px 0 8px;
+            color: #222;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d8e3dd;
+            border-radius: 10px;
+            margin-top: 8px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #1f8f4d;
+            box-shadow: 0 0 0 3px rgba(31,143,77,0.12);
+        }
+
+        .analyze-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 18px;
+            background: white;
+            color: #1f8f4d;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid #1f8f4d;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #1f8f4d;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .note {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #666;
+            text-align: left;
+            line-height: 1.5;
+            background: rgba(247, 255, 250, 0.85);
+            padding: 12px;
+            border-radius: 12px;
+            border-left: 4px solid #2fbf71;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+       @media screen and (max-width:768px){
+
+    body{
+        overflow-x:hidden !important;
+        background-attachment: scroll !important;
+    }
+
+    .container{
+        width:92% !important;
+        max-width:360px !important;
+        margin:20px auto !important;
+        padding:20px !important;
+    }
+
+    h2{
+        font-size:26px !important;
+    }
+
+    .btn-row{
+        flex-direction:column !important;
+        gap:10px !important;
+    }
+
+    .btn,
+    .back-btn,
+    input[type="text"],
+    input[type="file"]{
+        width:100% !important;
+        font-size:16px !important;
+    }
+
+    #reader{
+        min-height:100px !important;
+    }
+
+    .floating-item{
+        display:none !important;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+<div class="floating-item item1">🥤</div>
+<div class="floating-item item2">🍫</div>
+<div class="floating-item item3">📦</div>
+<div class="floating-item item4">🧃</div>
+
+<div class="container">
+    <h2>Scan Product</h2>
+    <p class="subtext">Scan barcode or enter product name.</p>
+
+  <form method="POST" action="{% url 'scan' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div id="reader"></div>
+
+    <div class="barcode-box">
+        <div class="barcode-title">Detected Barcode</div>
+        <div id="barcodeText">Not scanned yet</div>
+    </div>
+
+    <input type="hidden" name="barcode" id="barcodeInput">
+
+    <div class="btn-row">
+        <button type="button" class="btn" onclick="startScanner()">
+            Start Barcode Scan
+        </button>
+
+        <button type="button" class="btn secondary" onclick="stopScanner()">
+            Stop
+        </button>
+    </div>
+
+
+    <!-- NEW: Barcode Image Upload -->
+    <div class="section-title">Or Upload Barcode Photo</div>
+
+    <input
+        type="file"
+        name="barcode_image"
+        accept="image/*"
+        style="
+            width:100%;
+            padding:12px;
+            border:1px solid #d8e3dd;
+            border-radius:10px;
+            background:white;
+        "
+    >
+
+
+    <!-- Existing functionality unchanged -->
+    <div class="section-title">Or Enter Product Name</div>
+
+    <input
+        type="text"
+        name="product_name"
+        id="productName"
+        placeholder="Example: Hide & Seek"
+    >
+
+    <button type="submit" class="btn analyze-btn">
+        Analyze Product
+    </button>
+</form>
+
+    <div style="text-align:center; margin-top:16px;">
+        <a href="/dashboard/" class="back-btn">⬅ Back to Dashboard</a>
+    </div>
+
+    <div class="note">
+         If barcode is not found, enter the product name manually.
+    </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    let html5QrCode = null;
+    let scannerRunning = false;
+
+    async function startScanner() {
+        try {
+            if (scannerRunning) return;
+
+            const readerEl = document.getElementById("reader");
+            const barcodeTextEl = document.getElementById("barcodeText");
+            const barcodeInputEl = document.getElementById("barcodeInput");
+
+            if (!readerEl || !barcodeTextEl || !barcodeInputEl) {
+                alert("Scanner elements not found in page.");
+                return;
+            }
+
+            const devices = await Html5Qrcode.getCameras();
+            if (!devices || devices.length === 0) {
+                alert("No camera found on this device.");
+                return;
+            }
+
+            html5QrCode = new Html5Qrcode("reader");
+
+            const cameraId = devices[0].id;
+            const config = {
+                fps: 10,
+                qrbox: { width: 280, height: 140 },
+                aspectRatio: 1.6
+            };
+
+            await html5QrCode.start(
+                cameraId,
+                config,
+                (decodedText) => {
+                    if (decodedText && decodedText.length >= 8) {
+                        barcodeTextEl.innerText = decodedText;
+                        barcodeInputEl.value = decodedText;
+                        stopScanner();
+                    }
+                },
+                (errorMessage) => {
+                    // ignore scan noise
+                }
+            );
+
+            scannerRunning = true;
+            console.log("Scanner started");
+
+        } catch (err) {
+            console.log("SCANNER ERROR:", err);
+            alert("Scanner failed: " + err);
+        }
+    }
+
+    async function stopScanner() {
+        try {
+            if (html5QrCode && scannerRunning) {
+                await html5QrCode.stop();
+                await html5QrCode.clear();
+                scannerRunning = false;
+                console.log("Scanner stopped");
+            }
+        } catch (err) {
+            console.log("STOP ERROR:", err);
+        }
+    }
+</script>
+
+</body>
+</html>
         }
 
        .floating-item {

@@ -148,9 +148,9 @@
             gap: 50px;
         }
 
-        .feature-box {
-            width: 28%;
-            min-width: 250px;
+            .feature-box {
+                width: 28%;
+                max-width: 350px;
 
             background: rgba(255,255,255,0.7);
             backdrop-filter: blur(10px);
@@ -203,61 +203,85 @@
             text-align: center;
             padding: 15px;
         }
-        @media (max-width: 768px) {
-    body {
-        overflow-x: hidden;
+      @media screen and (max-width:768px){
+
+    body{
+        overflow-x:hidden !important;
     }
 
-    .container,
-    .card,
-    .form-box,
-    .dashboard-container,
-    .main-container {
-        width: 92% !important;
-        max-width: 92% !important;
-        margin: 20px auto !important;
-        padding: 20px !important;
+    .navbar{
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 15px !important;
+        text-align: center !important;
     }
 
-    h1 {
-        font-size: 28px !important;
-    }
-
-    h2 {
+    .navbar h2{
         font-size: 24px !important;
     }
 
-    input,
-    button,
-    textarea,
-    select {
-        width: 100% !important;
-        font-size: 15px !important;
-    }
-
-    .btn,
-    .button {
-        width: 100% !important;
-        margin-top: 10px !important;
-    }
-
-    table {
-        display: block;
-        width: 100% !important;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    img {
-        max-width: 100% !important;
-        height: auto !important;
-    }
-
-    .navbar,
-    .nav,
-    .menu {
+    .nav-links{
+        display: flex !important;
         flex-direction: column !important;
         gap: 10px !important;
+        width: 100% !important;
+    }
+
+    .nav-links a{
+        margin-left: 0 !important;
+        display: block !important;
+        width: 100% !important;
+        padding: 8px !important;
+    }
+
+    .hero{
+        padding: 45px 18px !important;
+    }
+
+    .hero h1{
+        font-size: 30px !important;
+        line-height: 1.2 !important;
+    }
+
+    .hero p{
+        font-size: 15px !important;
+        width: 100% !important;
+    }
+
+    .btn{
+        width: 100% !important;
+        max-width: 260px !important;
+        padding: 13px 20px !important;
+    }
+
+    .features{
+        flex-direction: column !important;
+        padding: 25px 18px !important;
+        gap: 18px !important;
+    }
+
+    .feature-box{
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 20px !important;
+    }
+
+    .about{
+        padding: 30px 18px !important;
+    }
+
+    .about p{
+        font-size: 15px !important;
+        width: 100% !important;
+    }
+
+    .shape{
+        display:none !important;
+    }
+
+    footer{
+        font-size: 13px !important;
+        padding: 12px !important;
     }
 }
     </style>
