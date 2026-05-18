@@ -1,171 +1,76 @@
 <!DOCTYPE html>
-{% comment %} <html> {% endcomment %}
+<html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
-<link rel="stylesheet" href="{% static 'css/mobile-fix.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome - HealthyMe</title>
 
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 
     <style>
-       body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100vh;
-    overflow-x: hidden;
+        * {
+            box-sizing: border-box;
+        }
 
-    font-family: 'Poppins', sans-serif;
-
-    background: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352')
-    no-repeat center center;
-
-    background-size: cover;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    /* IMPORTANT FIX */
-    background-attachment: scroll;
-}
-
-        /* Dark overlay */
-        body::before {
-            content: "";
-            position: absolute;
+        html, body {
+            margin: 0;
+            padding: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            top: 0;
-            left: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
         }
 
-        /* Floating animation background effect */
-        body::after {
-            content: "";
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 10%, transparent 10%);
-            background-size: 50px 50px;
-            animation: moveBg 20s linear infinite;
+        body {
+            background:
+                linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+                url("https://images.unsplash.com/photo-1498837167922-ddd27525d352");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        @keyframes moveBg {
-            from { transform: translate(0,0); }
-            to { transform: translate(-200px, -200px); }
-        }
-
-   .card {
-    position: relative;
-    background: rgba(255,255,255,0.95);
-
-    width: 90%;
-    max-width: 400px;
-
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
-
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-
-    z-index: 1;
-    animation: fadeSlide 1s ease forwards;
-    transition: all 0.4s ease;
-}
-
-/* 🔥 HOVER EFFECT */
-.card:hover {
-    transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-}
-.card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 20px;
-    padding: 2px;
-    background: linear-gradient(45deg, #27ae60, #2ecc71, #00ffcc);
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    opacity: 0;
-    transition: 0.4s;
-}
-
-/* Glow appears on hover */
-.card:hover::before {
-    opacity: 1;
-}
-
-        @keyframes fadeSlide {
-            0% {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .card {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(255,255,255,0.96);
+            padding: 30px 24px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
         }
 
         h1 {
             color: #27ae60;
-            margin-bottom: 10px;
-            animation: fadeSlide 1.2s ease forwards;
+            font-size: 26px;
+            margin: 0 0 10px;
         }
 
         p {
             color: #555;
             font-size: 14px;
-            margin-bottom: 30px;
-            animation: fadeSlide 1.4s ease forwards;
+            margin-bottom: 25px;
         }
 
         .btn {
             display: block;
             width: 100%;
-            padding: 15px;
+            padding: 13px;
             margin: 12px 0;
             border-radius: 30px;
-            border: none;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s ease;
-
-            animation: fadeSlide 1.6s ease forwards;
+            font-size: 15px;
+            font-weight: 600;
         }
-
-        /* Button hover animation */
-       .btn:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    letter-spacing: 0.5px;
-}
-
-.card:hover h1 {
-    color: #1e8449;
-    transition: 0.3s;
-}
-
-.card:hover p {
-    color: #333;
-}
 
         .login-btn {
             background: #27ae60;
             color: white;
-        }
-
-        .login-btn:hover {
-            background: #219150;
         }
 
         .register-btn {
@@ -174,47 +79,41 @@
             border: 2px solid #27ae60;
         }
 
-        .register-btn:hover {
-            background: #27ae60;
-            color: white;
-        }
-
         .small-text {
             font-size: 12px;
-            margin-top: 20px;
-            color: #888;
-            animation: fadeSlide 1.8s ease forwards;
+            margin-top: 18px;
+            color: #777;
         }
-   @media screen and (max-width:768px){
 
-    .card{
-        width: 92% !important;
-        max-width: 340px !important;
-        padding: 22px !important;
-    }
+        @media screen and (max-width: 480px) {
+            body {
+                align-items: center;
+                padding: 16px;
+                background-position: center top;
+            }
 
-    h1{
-        font-size: 24px !important;
-    }
+            .card {
+                max-width: 330px;
+                padding: 24px 18px;
+            }
 
-    p{
-        font-size: 13px !important;
-    }
+            h1 {
+                font-size: 22px;
+            }
 
-    .btn{
-        width:100% !important;
-        font-size:16px !important;
-    }
+            p {
+                font-size: 12px;
+            }
 
-    body{
-        background-attachment: scroll !important;
-    }
-}
+            .btn {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 
 <body>
-
     <div class="card">
         <h1>Welcome to HealthyMe</h1>
         <p>Your smart companion for healthier food choices</p>
@@ -226,6 +125,5 @@
             Eat Smart • Live Healthy • Stay Fit
         </div>
     </div>
-
 </body>
 </html>
