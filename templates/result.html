@@ -341,6 +341,62 @@
     .floating{
         display:none !important;
     }
+    .buy-btn {
+    display: inline-block;
+    background: #1f8f4d;
+    color: white !important;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    margin: 5px 4px;
+    transition: 0.3s;
+}
+
+.buy-btn:hover {
+    background: #16663a;
+    transform: scale(1.05);
+}
+
+.recommend-links {
+    margin-top: 10px;
+}
+.recommend-card {
+    background: #f5f5f5;
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+}
+
+.recommend-card h4 {
+    margin-bottom: 12px;
+    color: #1f2d3d;
+}
+
+.buy-btn {
+    display: inline-block;
+    background: #1f8f4d;
+    color: white !important;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-right: 6px;
+    margin-bottom: 5px;
+    transition: 0.3s;
+}
+
+.buy-btn:hover {
+    background: #16663a;
+}
+
+.recommend-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
 }
 </style>
 </head>
@@ -397,7 +453,25 @@
             {% endfor %}
         </ul>
     </div>
-{% if recommendations %}
+   {% if recommendation %}
+<div class="recommend-box">
+    <h3>💡 Healthier Recommendation</h3>
+    <p>Better options in the same category:</p>
+
+    {% for item in recommendation %}
+    <div class="recommend-card">
+        <h4>{{ item.name }}</h4>
+
+        <div class="recommend-links">
+            <a href="{{ item.amazon }}" target="_blank" class="buy-btn">Amazon</a>
+            <a href="{{ item.flipkart }}" target="_blank" class="buy-btn">Flipkart</a>
+            <a href="{{ item.bigbasket }}" target="_blank" class="buy-btn">BigBasket</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% comment %} {% if recommendations %}
 <div class="recommend-box">
     <h3>💡 Healthier Recommendation</h3>
     <p>Better options in the same category:</p>
@@ -412,7 +486,7 @@
         </div>
     {% endfor %}
 </div>
-{% endif %}
+{% endif %} {% endcomment %}
 {% comment %} 
     {% if recommendation %}
     <div class="recommend-box">

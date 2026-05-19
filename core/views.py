@@ -766,12 +766,11 @@ def scan(request):
                 product_name=product["product_name"]
             )
 
-            recommendation = get_healthier_recommendation(
-                product["product_name"],
-                product["text"],
-                result["score"]
+            recommendation = get_recommendations(
+                result.get("product_name", product["product_name"]),
+                result.get("issues", []),
+                result.get("score", 0)
             )
-
             result["recommendation"] = recommendation
             result["barcode"] = barcode if barcode else product.get("barcode", "")
             result["source"] = product.get("lookup_source", "unknown")
@@ -1059,41 +1058,59 @@ def read_barcode(image_file):
         print("BARCODE IMAGE ERROR:", e)
         return None
     
-def get_recommendations(product_name, issues):
+def get_recommendations(product_name, issues, score):
+    # If score is 50 or more, no recommendations
+    if score >= 50:
+        return []
+
     product_name = product_name.lower()
     issues_text = " ".join(issues).lower()
 
     if "chocolate" in product_name or "biscuit" in product_name or "sugar" in issues_text:
-        return [
+        products = [
             "Dark Chocolate (70%+ cocoa)",
             "Dates with Nuts",
             "Roasted Almond Snack"
         ]
 
     elif "chips" in product_name or "fried" in issues_text or "fat" in issues_text:
-        return [
+        products = [
             "Roasted Makhana",
             "Baked Veggie Chips",
             "Roasted Chana"
         ]
 
     elif "cold drink" in product_name or "beverage" in issues_text or "sugary" in issues_text:
-        return [
+        products = [
             "Coconut Water",
             "Fresh Lime Water",
             "Unsweetened Fruit Juice"
         ]
 
     elif "noodles" in product_name or "refined flour" in issues_text:
-        return [
+        products = [
             "Whole Wheat Noodles",
             "Vegetable Poha",
             "Oats Upma"
         ]
 
     else:
-        return [
+        products = [
             "Fresh Fruits",
             "Mixed Nuts",
             "Homemade Healthy Snack"
         ]
+
+    # Add shopping links
+    recommendations = []
+
+    for item in products:
+        recommendations.append({
+            "name": item,
+            "amazon": f"https://www.amazon.in/s?k={item}",
+            "flipkart": f"https://www.flipkart.com/search?q={item}",
+            "bigbasket": f"https://www.bigbasket.com/ps/?q={item}",
+            "jiomart": f"https://www.jiomart.com/search/{item}"
+        })
+
+    return recommendations
