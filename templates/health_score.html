@@ -160,6 +160,38 @@
         font-size:16px !important;
     }
 }
+.back-center {
+    text-align: center !important;
+    margin-top: 25px !important;
+}
+
+.health-back-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: auto !important;
+    min-width: 230px !important;
+    max-width: 280px !important;
+
+    padding: 12px 22px !important;
+
+    background: #0f6b2d !important;
+    color: white !important;
+
+    border-radius: 12px !important;
+
+    text-decoration: none !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+
+    border: none !important;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15) !important;
+}
+
+.health-back-btn:hover {
+    background: #14853a !important;
+}
     .container,
 .card,
 .score-box{
@@ -219,6 +251,14 @@
     }
 
 }
+@media screen and (max-width:768px){
+
+    .floating{
+        font-size:35px !important;   /* smaller */
+        opacity:0.15 !important;     /* lighter */
+    }
+
+}
     </style>
 </head>
 <body>
@@ -254,9 +294,9 @@
             <p>No scan history yet.</p>
         {% endfor %}
 
-        <div class="center">
-            <a href="/dashboard/" class="btn">⬅ Back to Dashboard</a>
-        </div>
+      <div class="back-center">
+    <a href="/dashboard/" class="health-back-btn">⬅ Back to Dashboard</a>
+</div>
     </div>
 
 </body>

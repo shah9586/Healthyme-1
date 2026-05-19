@@ -397,7 +397,23 @@
             {% endfor %}
         </ul>
     </div>
+{% if recommendations %}
+<div class="recommend-box">
+    <h3>💡 Healthier Recommendation</h3>
+    <p>Better options in the same category:</p>
 
+    {% for item in recommendations %}
+        <div class="recommend-card">
+            <b>{{ item }}</b><br>
+
+            <a href="https://www.amazon.in/s?k={{ item }}" target="_blank">Amazon</a>
+            <a href="https://www.bigbasket.com/ps/?q={{ item }}" target="_blank">BigBasket</a>
+            <a href="https://www.jiomart.com/search/{{ item }}" target="_blank">JioMart</a>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% comment %} 
     {% if recommendation %}
     <div class="recommend-box">
         <h3>💡 Healthier Recommendation</h3>
@@ -414,7 +430,7 @@
             </div>
         {% endfor %}
     </div>
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     <div class="section">
         <h3 class="good">✅ Good Things</h3>

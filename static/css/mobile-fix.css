@@ -1,63 +1,26 @@
+* {
+    box-sizing: border-box;
+}
 
 html, body {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-}
-
-body {
-    background-attachment: scroll !important;
-}
-
-* {
-    box-sizing: border-box !important;
-}
-
-.container,
-.card,
-.form-box,
-.login-box,
-.register-box,
-.dashboard-container,
-.main-container,
-.content,
-.wrapper {
-    width: 92% !important;
-    max-width: 480px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 img, video {
-    max-width: 100% !important;
-    height: auto !important;
-}
-
-input,
-button,
-textarea,
-select {
-    max-width: 100% !important;
-}
-
-table {
-    width: 100% !important;
-}
-
-.table-wrapper {
-    overflow-x: auto !important;
+    max-width: 100%;
+    height: auto;
 }
 
 @media screen and (max-width: 768px) {
+
     body {
-        min-height: 100vh !important;
-        background-size: cover !important;
-        background-position: center !important;
+        overflow-x: hidden !important;
         background-attachment: scroll !important;
     }
 
     .container,
-    .card,
     .form-box,
     .login-box,
     .register-box,
@@ -67,6 +30,7 @@ table {
     .wrapper {
         width: 92% !important;
         max-width: 360px !important;
+        margin: 20px auto !important;
         padding: 18px !important;
     }
 
@@ -82,6 +46,14 @@ table {
         font-size: 18px !important;
     }
 
+    input,
+    button,
+    textarea,
+    select {
+        max-width: 100% !important;
+        font-size: 16px !important;
+    }
+
     .topbar,
     .navbar,
     .nav,
@@ -92,20 +64,14 @@ table {
         text-align: center !important;
     }
 
-    input,
-    button,
-    textarea,
-    select,
-    .btn {
-        width: 100% !important;
-        font-size: 16px !important;
-    }
-
+    .floating,
     .floating-item {
         display: none !important;
     }
 
     table {
-        min-width: 600px !important;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
     }
 }

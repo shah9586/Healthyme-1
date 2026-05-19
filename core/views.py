@@ -14,7 +14,7 @@ from django.shortcuts import render
 from PIL import Image
 #from pyzbar.pyzbar import decode
 from PIL import Image
-
+from .models import RewardWallet, RewardHistory
 #from .health_logic import analyze_ingredients   # your existing function
 
 
@@ -735,7 +735,7 @@ def _calc_points(score):
     else:
         return 3
 
-@login_required
+
 @login_required
 def scan(request):
     if request.method == "POST":
@@ -743,15 +743,17 @@ def scan(request):
         barcode = ""
         barcode_image = request.FILES.get("barcode_image")
 
-        # If user uploads barcode image
         if barcode_image:
             barcode = read_barcode(barcode_image)
 
-        # If barcode image not uploaded or not detected, use manual barcode input
         if not barcode:
             barcode = request.POST.get("barcode", "").strip()
 
         product_name_input = request.POST.get("product_name", "").strip()
+        # If user enters barcode number in product name field
+        if product_name_input.isdigit() and len(product_name_input) >= 8:
+         barcode = product_name_input
+         product_name_input = ""
 
         product = fetch_product_advanced(
             barcode=barcode if barcode else None,
@@ -812,35 +814,20 @@ def scan(request):
             "scan_points": 0,
         })
 
-    return render(request, "scan.html")
-
+    return render(request, "scan.html")\
+    
 def give_scan_reward(user, result):
-    wallet, _ = RewardWallet.objects.get_or_create(user=user)
+    wallet, created = RewardWallet.objects.get_or_create(user=user)
 
-    points_to_add = 5
+    points_to_add = 3
     action_text = "Product scanned"
 
     wallet.total_scans += 1
 
     if result.get("score") is not None and result["score"] >= 75:
-        points_to_add += 10
+        points_to_add += 5
         wallet.healthy_scans += 1
         action_text = "Healthy product scanned"
-
-    today = timezone.now().date()
-    already_rewarded_today = RewardHistory.objects.filter(
-        user=user,
-        action="First scan of the day",
-        created_at__date=today
-    ).exists()
-
-    if not already_rewarded_today:
-        points_to_add += 5
-        RewardHistory.objects.create(
-            user=user,
-            action="First scan of the day",
-            points_added=5
-        )
 
     wallet.points += points_to_add
     wallet.save()
@@ -849,7 +836,7 @@ def give_scan_reward(user, result):
         user=user,
         action=action_text,
         points_added=points_to_add
-    )
+    )   
 
 @login_required
 def rewards_page(request):
@@ -1071,3 +1058,42 @@ def read_barcode(image_file):
     except Exception as e:
         print("BARCODE IMAGE ERROR:", e)
         return None
+    
+def get_recommendations(product_name, issues):
+    product_name = product_name.lower()
+    issues_text = " ".join(issues).lower()
+
+    if "chocolate" in product_name or "biscuit" in product_name or "sugar" in issues_text:
+        return [
+            "Dark Chocolate (70%+ cocoa)",
+            "Dates with Nuts",
+            "Roasted Almond Snack"
+        ]
+
+    elif "chips" in product_name or "fried" in issues_text or "fat" in issues_text:
+        return [
+            "Roasted Makhana",
+            "Baked Veggie Chips",
+            "Roasted Chana"
+        ]
+
+    elif "cold drink" in product_name or "beverage" in issues_text or "sugary" in issues_text:
+        return [
+            "Coconut Water",
+            "Fresh Lime Water",
+            "Unsweetened Fruit Juice"
+        ]
+
+    elif "noodles" in product_name or "refined flour" in issues_text:
+        return [
+            "Whole Wheat Noodles",
+            "Vegetable Poha",
+            "Oats Upma"
+        ]
+
+    else:
+        return [
+            "Fresh Fruits",
+            "Mixed Nuts",
+            "Homemade Healthy Snack"
+        ]

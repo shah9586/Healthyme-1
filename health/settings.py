@@ -146,16 +146,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'shah@gmail.com'
-EMAIL_HOST_PASSWORD ='shla lirr aztz szkn'
+EMAIL_HOST_USER = 'shahprincy9586@gmail.com'
+EMAIL_HOST_PASSWORD ='shlalirraztzszkn'
 DEFAULT_FROM_EMAIL = 'shahprincy9586@gmail.com'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'shahprincy9586@gmail.com'
-EMAIL_HOST_PASSWORD = 'shla lirr aztz szkn'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 GEMINI_API_KEY = "AIzaSyDSRLx1Fw6B4VCMKxYGmNtnnc6B6tSgLp4"

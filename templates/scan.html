@@ -4,7 +4,6 @@
     {% load static %}
     <title>Scan Product - HealthyMe</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/mobile-fix.css' %}">
 
     <style>
         * { box-sizing: border-box; }
@@ -14,13 +13,11 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             color: #222;
             min-height: 100vh;
-            overflow-x: hidden;
             background:
                 linear-gradient(rgba(255,255,255,0.84), rgba(255,255,255,0.84)),
                 url("https://images.unsplash.com/photo-1542838132-92c53300491e");
             background-size: cover;
             background-position: center;
-            background-attachment: scroll;
         }
 
         .container {
@@ -35,14 +32,7 @@
         }
 
         h2 {
-            margin-top: 0;
             color: #1f8f4d;
-            font-size: 38px;
-        }
-
-        .subtext {
-            color: #666;
-            font-size: 14px;
         }
 
         #reader {
@@ -59,12 +49,6 @@
             padding: 14px;
             border-radius: 14px;
             margin: 18px 0;
-            border: 1px solid #e7eee9;
-        }
-
-        .barcode-title {
-            font-weight: bold;
-            color: #1f2d3d;
         }
 
         .btn-row {
@@ -72,7 +56,7 @@
             justify-content: center;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
 
         .btn {
@@ -90,22 +74,15 @@
             background: #95a5a6;
         }
 
-        .section-title {
-            text-align: left;
-            font-size: 18px;
-            margin: 18px 0 8px;
-            font-weight: 600;
-        }
-
         input[type="text"],
-        input[type="file"] {
+        input[type="file"],
+        select {
             width: 100%;
             padding: 12px;
             border: 1px solid #d8e3dd;
             border-radius: 10px;
-            margin-top: 8px;
+            margin-top: 10px;
             font-size: 14px;
-            background: white;
         }
 
         .analyze-btn {
@@ -125,42 +102,7 @@
             font-size: 14px;
             font-weight: bold;
             border: 1px solid #1f8f4d;
-        }
-
-        .note {
-            margin-top: 16px;
-            font-size: 13px;
-            color: #666;
-            text-align: left;
-            background: #f7fffa;
-            padding: 12px;
-            border-radius: 12px;
-            border-left: 4px solid #2fbf71;
-        }
-
-        @media screen and (max-width:768px) {
-            .container {
-                width: 92% !important;
-                max-width: 360px !important;
-                margin: 20px auto !important;
-                padding: 20px !important;
-            }
-
-            h2 {
-                font-size: 26px !important;
-            }
-
-            .btn-row {
-                flex-direction: column !important;
-            }
-
-            .btn,
-            .back-btn,
-            input[type="text"],
-            input[type="file"] {
-                width: 100% !important;
-                font-size: 16px !important;
-            }
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -169,65 +111,99 @@
 
 <div class="container">
     <h2>Scan Product</h2>
-    <p class="subtext">Scan barcode, upload barcode photo, or enter product name.</p>
+    <p>Scan barcode, upload barcode photo, or enter product name.</p>
 
     <form method="POST" action="{% url 'scan' %}" enctype="multipart/form-data">
         {% csrf_token %}
 
+        <!-- Scanner Window -->
         <div id="reader"></div>
 
+        <!-- Barcode Result -->
         <div class="barcode-box">
-            <div class="barcode-title">Detected Barcode</div>
+            <strong>Detected Barcode</strong>
             <div id="barcodeText">Not scanned yet</div>
         </div>
 
+        <!-- Hidden Barcode -->
         <input type="hidden" name="barcode" id="barcodeInput">
 
+        <!-- Camera Selection -->
+        <select id="cameraSelect"></select>
+
+        <!-- Scanner Buttons -->
         <div class="btn-row">
             <button type="button" class="btn" onclick="startScanner()">Start Barcode Scan</button>
             <button type="button" class="btn secondary" onclick="stopScanner()">Stop</button>
         </div>
 
-        <div class="section-title">Or Upload Barcode Photo</div>
+        <!-- Upload Option -->
+        <h4>Or Upload Barcode Photo</h4>
         <input type="file" name="barcode_image" accept="image/*">
 
-        <div class="section-title">Or Enter Product Name</div>
-        <input type="text" name="product_name" id="productName" placeholder="Example: Hide & Seek">
+        <!-- Manual Entry -->
+        <h4>Or Enter Product Name</h4>
+        <input type="text" name="product_name" placeholder="Example: Hide & Seek">
 
+        <!-- Submit -->
         <button type="submit" class="btn analyze-btn">Analyze Product</button>
     </form>
 
-    <div style="text-align:center; margin-top:16px;">
-        <a href="/dashboard/" class="back-btn">⬅ Back to Dashboard</a>
-    </div>
-
-    <div class="note">
-        If barcode is not found, enter the product name manually.
-    </div>
+    <a href="/dashboard/" class="back-btn">⬅ Back to Dashboard</a>
 </div>
 
+<!-- Barcode Scanner Library -->
 <script src="https://unpkg.com/html5-qrcode"></script>
+
 <script>
     let html5QrCode = null;
     let scannerRunning = false;
+    let cameras = [];
 
+    // Load available cameras
+    async function loadCameras() {
+        try {
+            cameras = await Html5Qrcode.getCameras();
+
+            const select = document.getElementById("cameraSelect");
+            select.innerHTML = "";
+
+            if (cameras.length === 0) {
+                alert("No camera found!");
+                return;
+            }
+
+            cameras.forEach((camera, index) => {
+                let option = document.createElement("option");
+                option.value = camera.id;
+                option.text = camera.label || `Camera ${index + 1}`;
+                select.appendChild(option);
+            });
+
+        } catch (err) {
+            alert("Camera permission denied.");
+            console.log(err);
+        }
+    }
+
+    // Start scanner with selected camera
     async function startScanner() {
         try {
-            if (scannerRunning) return;
+            if (scannerRunning) {
+                await stopScanner();
+            }
 
-            const barcodeTextEl = document.getElementById("barcodeText");
-            const barcodeInputEl = document.getElementById("barcodeInput");
+            const selectedCameraId = document.getElementById("cameraSelect").value;
 
-            const devices = await Html5Qrcode.getCameras();
-            if (!devices || devices.length === 0) {
-                alert("No camera found on this device.");
+            if (!selectedCameraId) {
+                alert("Please select a camera first.");
                 return;
             }
 
             html5QrCode = new Html5Qrcode("reader");
 
             await html5QrCode.start(
-                devices[0].id,
+                selectedCameraId,
                 {
                     fps: 10,
                     qrbox: { width: 280, height: 140 },
@@ -235,8 +211,8 @@
                 },
                 (decodedText) => {
                     if (decodedText && decodedText.length >= 8) {
-                        barcodeTextEl.innerText = decodedText;
-                        barcodeInputEl.value = decodedText;
+                        document.getElementById("barcodeText").innerText = decodedText;
+                        document.getElementById("barcodeInput").value = decodedText;
                         stopScanner();
                     }
                 }
@@ -246,9 +222,11 @@
 
         } catch (err) {
             alert("Scanner failed: " + err);
+            console.log(err);
         }
     }
 
+    // Stop scanner
     async function stopScanner() {
         try {
             if (html5QrCode && scannerRunning) {
@@ -260,6 +238,9 @@
             console.log(err);
         }
     }
+
+    // Load cameras when page opens
+    window.addEventListener("load", loadCameras);
 </script>
 
 </body>
